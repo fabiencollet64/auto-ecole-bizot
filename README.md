@@ -84,12 +84,29 @@ longueur affichée par Google.
 
 ## Charte visuelle
 
-Six couleurs, reprises du thème de la route : bitume `#0e1420`, bleu de
-signalisation `#1b4de4`, jaune de marquage `#ffc94a`, gris clair `#f4f6fa`,
-blanc, plus trois teintes dérivées pour les états d'interface. Le jaune porte
-l'action principale (contraste 11,6:1 avec le bitume), le bleu la marque et les
-liens (6,5:1 sur blanc). Corps de texte à 18 px minimum, zones cliquables de
-48 px, navigation utilisable au clavier, lien d'évitement sur chaque page.
+La palette est relevée sur l'enseigne et le logo de l'auto-école, pour que le
+site prolonge ce que le passant voit avenue du Général Michel Bizot :
+
+| Jeton | Valeur | Origine et usage |
+|---|---|---|
+| `--bleu` | `#123fa8` | Le bleu de la devanture — couleur de marque, aplats, liens (7,4:1 sur blanc) |
+| `--bleu-nuit` | `#0a2468` | Version profonde — en-tête, héros, pied de page |
+| `--rouge` | `#c81d2b` | Les anneaux du logotype — bouton principal, jamais du texte courant (blanc sur rouge : 5,9:1) |
+| `--turquoise` | `#0e727f` | Le mur d'accueil de l'agence — badges et accents sur fond clair |
+| `--turquoise-vif` | `#57d2e0` | Le même, éclairci pour rester lisible sur le bleu nuit (8,9:1) |
+| `--gris` | `#f1f4fa` | Fonds de section, neutre légèrement bleuté |
+| `--encre` | `#14181c` | Le noir du logotype — texte courant (15,8:1 sur blanc) |
+
+Le logotype de l'en-tête reprend celui de l'enseigne : le mot AUTOMOTO dont les
+O sont des anneaux rouges, encadré de la voiture et de la moto. Il est
+reconstitué en HTML et en CSS — les anneaux sont des bordures, pas des images,
+donc nets à toute échelle et sans requête réseau. **Dès que l'auto-école
+fournit son fichier officiel**, déposez-le en `assets/img/logo-bizot.svg` : il
+remplace automatiquement la reconstitution sur toutes les pages (le chemin est
+réglé par `LOGO_FICHIER` dans `outils/gabarits.py`).
+
+Corps de texte à 18 px minimum, zones cliquables de 48 px, navigation
+utilisable au clavier, lien d'évitement sur chaque page.
 
 ## Contenu à valider avant mise en ligne
 

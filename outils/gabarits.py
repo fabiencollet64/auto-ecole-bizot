@@ -59,6 +59,11 @@ AGENCE_SITE = "https://colletmarketing.com"
 
 VERSION = "0"  # empreinte des ressources, injectée par generer.py
 
+# Logo officiel de l'auto-école. Déposez le fichier fourni par le client sous
+# ce chemin (SVG de préférence, sinon PNG détouré) : il remplace alors
+# automatiquement le logotype reconstitué en HTML, sur toutes les pages.
+LOGO_FICHIER = "assets/img/logo-bizot.svg"
+
 NAV = [
     ("index.html",             "Accueil"),
     ("permis-voiture.html",    "Permis voiture"),
@@ -87,6 +92,29 @@ def empreinte(chemin_relatif):
         except OSError:
             _empreintes[chemin_relatif] = "0"
     return _empreintes[chemin_relatif]
+
+
+def logotype(prof=0):
+    """Le logo de l'en-tête.
+
+    Si le fichier officiel a été déposé (LOGO_FICHIER), il est servi tel quel.
+    Sinon, le logotype est reconstitué en HTML d'après l'enseigne : AUTOMOTO
+    dont les O sont des anneaux rouges, encadré de la voiture et de la moto.
+    """
+    if os.path.exists(os.path.join(RACINE, LOGO_FICHIER)):
+        return ('<img class="logo__image" src="%s%s?v=%s" alt="" width="160" height="40">'
+                % (prefixe(prof), LOGO_FICHIER, empreinte(LOGO_FICHIER)))
+    anneau = '<i class="logo__o"></i>'
+    return (
+        '<span class="logo__lockup" aria-hidden="true">'
+        '%s'
+        '<span class="logo__mot">AUT%sM%sT%s</span>'
+        '%s'
+        '</span>'
+        '<span class="logo__sous" aria-hidden="true">ÉCOLE · BIZOT · PARIS 12<sup>e</sup></span>'
+        % (icone("voiture", "logo__vehicule"), anneau, anneau, anneau,
+           icone("moto", "logo__vehicule"))
+    )
 
 
 def prefixe(profondeur):
@@ -233,12 +261,8 @@ def entete(page, prof):
 <header class="entete">
   <div class="conteneur entete__barre">
     <a class="logo" href="%sindex.html"%s>
-      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-        <rect width="40" height="40" rx="10" fill="#ffc94a"/>
-        <path d="M8 30 20 10l12 20z" fill="#0e1420"/>
-        <path d="M19 20h2v3h-2zm0 5h2v3h-2z" fill="#ffc94a"/>
-      </svg>
-      <span class="logo__marque">Auto Moto École Bizot<span>Paris 12e</span></span>
+      %s
+      <span class="visuellement-cache">Auto Moto École Bizot — accueil</span>
     </a>
     <button class="bouton-menu" type="button" data-menu-bouton aria-expanded="false" aria-controls="menu">
       Menu
@@ -252,7 +276,7 @@ def entete(page, prof):
   </div>
 </header>""" % (bandeau_maquette(), p,
                 ' aria-current="page"' if page == "index.html" else "",
-                "".join(liens), TEL_LIEN, icone("tel"), TEL_AFFICHE)
+                logotype(prof), "".join(liens), TEL_LIEN, icone("tel"), TEL_AFFICHE)
 
 
 def fil_ariane(fil, prof):
@@ -359,7 +383,7 @@ def page(fichier, titre, description, corps, prof=0, fil=None, schemas=(), page_
 <title>%s</title>
 <meta name="description" content="%s">
 <link rel="canonical" href="%s">
-<meta name="theme-color" content="#0e1420">
+<meta name="theme-color" content="#123fa8">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="%s">

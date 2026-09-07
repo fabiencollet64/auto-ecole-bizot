@@ -1,43 +1,39 @@
-<title>Maquette — Auto Moto École Bizot</title>
+<title>Maquette Auto-école Bizot</title>
 <style>
-/* ==========================================================================
-   Auto Moto École Bizot — maquette Collet Marketing
-   Feuille de style unique. Aucune dépendance, aucune étape de compilation.
-
-   Ordre : jetons → socle → mise en page → composants → utilitaires.
-   Aucune couleur n'est écrite en dur hors du bloc « jetons ».
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. Jetons
-   -------------------------------------------------------------------------- */
 :root {
-  /* Palette — six valeurs, aucune autre.
-     Le thème vient de la route : bitume, marquage au sol, bleu de signalisation. */
-  --bitume:       #0e1420;  /* texte principal, en-tête, pied de page          */
-  --bitume-clair: #1b2534;  /* aplats secondaires sur fond sombre              */
-  --bleu:         #1b4de4;  /* couleur de marque, liens, aplats                */
-  --jaune:        #ffc94a;  /* action principale et marquage au sol            */
-  --gris:         #f4f6fa;  /* fonds de section clairs                         */
-  --blanc:        #ffffff;
+  /* Palette — relevée sur l'enseigne et le logo de l'auto-école.
+     Bleu de la devanture, rouge des anneaux du logotype, turquoise du mur
+     d'accueil : le site prolonge ce que le passant voit avenue du Général
+     Michel Bizot. */
+  --bleu:           #123fa8;  /* enseigne — couleur de marque, aplats          */
+  --bleu-nuit:      #0a2468;  /* fonds profonds : en-tête, héros, pied         */
+  --rouge:          #c81d2b;  /* anneaux du logo — action principale, jamais du texte courant */
+  --turquoise:      #0e727f;  /* mur de l'agence — accents sur fond clair      */
+  --gris:           #f1f4fa;  /* fonds de section clairs                       */
+  --blanc:          #ffffff;
+  --encre:          #14181c;  /* texte — le noir du logotype                   */
 
-  /* Teintes dérivées — états d'interface uniquement (survol, bordures). */
-  --bleu-voile:   #e8eeff;  /* bleu 10 % sur blanc : fonds d'encadré           */
-  --bleu-fonce:   #1740bd;  /* survol du bouton bleu                           */
-  --jaune-fonce:  #f0b62b;  /* survol du bouton jaune                          */
-  --bitume-doux:  #4a5468;  /* texte secondaire — 7,4:1 sur blanc              */
-  --trait:        #dde3ee;
+  /* Teintes dérivées — états d'interface et lisibilité sur fond sombre.
+     Aucune n'est une couleur de marque supplémentaire. */
+  --bleu-voile:     #e8eefb;  /* bleu très dilué : encadrés, fonds d'icône     */
+  --bleu-fonce:     #0e3187;  /* survol des liens                              */
+  --bleu-profond:   #16348c;  /* aplats secondaires sur fond sombre            */
+  --rouge-fonce:    #a5151f;  /* survol du bouton principal                    */
+  --turquoise-vif:  #57d2e0;  /* turquoise éclairci — accents sur fond sombre  */
+  --encre-douce:    #4a5364;  /* texte secondaire — 7,3:1 sur blanc            */
+  --trait:          #dbe2f0;
 
   /* Rôles — les composants ne consomment jamais la palette directement. */
   --fond-page:      var(--blanc);
   --fond-clair:     var(--gris);
-  --fond-sombre:    var(--bitume);
-  --texte:          var(--bitume);
-  --texte-doux:     var(--bitume-doux);
-  --texte-sombre:   var(--blanc);      /* texte posé sur --fond-sombre         */
-  --action-fond:    var(--jaune);      /* bitume sur jaune = 11,6:1            */
-  --action-texte:   var(--bitume);
-  --marque:         var(--bleu);       /* bleu sur blanc = 6,5:1               */
+  --fond-sombre:    var(--bleu-nuit);
+  --texte:          var(--encre);
+  --texte-doux:     var(--encre-douce);
+  --texte-sombre:   var(--blanc);        /* texte posé sur --fond-sombre       */
+  --action-fond:    var(--rouge);        /* blanc sur rouge = 5,9:1            */
+  --action-texte:   var(--blanc);
+  --marque:         var(--bleu);         /* bleu sur blanc = 7,6:1             */
+  --accent-sombre:  var(--turquoise-vif);/* turquoise clair sur bleu nuit = 8,9:1 */
 
   /* Typographie — tout en rem, jamais en px : le réglage « taille du texte »
      du navigateur doit rester opérant. */
@@ -56,8 +52,8 @@
 
   --rayon:       0.75rem;
   --rayon-large: 1.25rem;
-  --ombre:       0 1px 2px rgba(14, 20, 32, .06), 0 8px 24px rgba(14, 20, 32, .07);
-  --ombre-forte: 0 18px 48px rgba(14, 20, 32, .18);
+  --ombre:       0 1px 2px rgba(10, 36, 104, .07), 0 8px 24px rgba(10, 36, 104, .08);
+  --ombre-forte: 0 18px 48px rgba(10, 36, 104, .22);
 }
 
 /* --------------------------------------------------------------------------
@@ -100,12 +96,12 @@ a:hover { color: var(--bleu-fonce); }
   outline-offset: 3px;
   border-radius: 4px;
 }
-.sur-fond-sombre :focus-visible, .pied :focus-visible { outline-color: var(--jaune); }
+.sur-fond-sombre :focus-visible, .pied :focus-visible { outline-color: var(--accent-sombre); }
 
 .saut-navigation {
   position: absolute; top: 0; left: 0; z-index: 100;
   width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
-  background: var(--jaune); color: var(--bitume);
+  background: var(--action-fond); color: var(--action-texte);
   padding: .75rem 1.25rem; font-weight: 700; border-radius: 0 0 var(--rayon) 0;
 }
 .saut-navigation:focus {
@@ -125,7 +121,7 @@ a:hover { color: var(--bleu-fonce); }
 .section--claire { background: var(--fond-clair); }
 .section--sombre { background: var(--fond-sombre); color: var(--texte-sombre); }
 .section--sombre h2, .section--sombre h3 { color: var(--texte-sombre); }
-.section--sombre a { color: var(--jaune); }
+.section--sombre a { color: var(--accent-sombre); }
 
 .section__intro { max-width: 44rem; margin-bottom: 2.5rem; }
 .section__intro p { max-width: none; color: var(--texte-doux); font-size: 1.1875rem; }
@@ -137,7 +133,7 @@ a:hover { color: var(--bleu-fonce); }
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--marque); margin-bottom: .75rem;
 }
-.section--sombre .surtitre { color: var(--jaune); }
+.section--sombre .surtitre { color: var(--accent-sombre); }
 
 .grille { display: grid; gap: var(--gouttiere); }
 .grille--2 { grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
@@ -149,26 +145,41 @@ a:hover { color: var(--bleu-fonce); }
    4. En-tête
    -------------------------------------------------------------------------- */
 .bandeau-maquette {
-  background: var(--bitume-clair); color: var(--blanc);
+  background: var(--bleu-profond); color: var(--blanc);
   font-size: var(--mention); text-align: center;
   padding: .55rem 1rem;
 }
-.bandeau-maquette a { color: var(--jaune); font-weight: 700; }
-.bandeau-maquette strong { color: var(--jaune); }
+.bandeau-maquette a { color: var(--accent-sombre); font-weight: 700; }
+.bandeau-maquette strong { color: var(--accent-sombre); }
 
 .entete {
   position: sticky; top: 0; z-index: 50;
-  background: var(--bitume); color: var(--texte-sombre);
-  border-bottom: 3px solid var(--jaune);
+  background: var(--bleu-nuit); color: var(--texte-sombre);
+  border-bottom: 3px solid var(--rouge);
 }
 .entete__barre {
   width: min(100% - 2.5rem, var(--largeur-entete));
   display: flex; align-items: center; gap: 1rem;
   min-height: 4.5rem;
 }
-.logo { display: inline-flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--blanc); flex: 0 0 auto; }
-.logo__marque { font-weight: 900; font-size: 1.0625rem; letter-spacing: -.02em; line-height: 1.15; max-width: 9.5rem; }
-.logo__marque span { display: block; font-size: .625rem; font-weight: 700; letter-spacing: .18em; color: var(--jaune); }
+/* Logotype — reprise du logo de l'enseigne : le mot AUTOMOTO dont les O sont
+   des anneaux rouges, encadré de la voiture et de la moto. Les anneaux sont
+   des bordures, pas des images : ils suivent la taille du texte et restent
+   nets à toute échelle. Le fichier officiel de l'auto-école, déposé dans
+   assets/img/, remplace ce tracé (voir gabarits.py, LOGO_FICHIER). */
+.logo { display: inline-flex; flex-direction: column; gap: .15rem; text-decoration: none; color: var(--blanc); flex: 0 0 auto; }
+.logo__lockup { display: flex; align-items: center; gap: .4rem; }
+.logo__mot {
+  display: flex; align-items: center; gap: .04em;
+  font-weight: 900; font-size: 1.125rem; letter-spacing: .01em; line-height: 1;
+}
+.logo__o {
+  display: inline-block; width: .74em; height: .74em;
+  border: .19em solid var(--rouge); border-radius: 50%;
+}
+.logo__vehicule { width: 1.5rem; height: 1.5rem; fill: currentColor; flex: 0 0 auto; }
+.logo__sous { font-size: .5625rem; font-weight: 700; letter-spacing: .2em; color: rgba(255,255,255,.72); }
+.logo__image { height: 2.5rem; width: auto; }
 
 .nav { margin-left: auto; }
 .nav__liste { display: flex; align-items: center; gap: .1rem; list-style: none; margin: 0; padding: 0; }
@@ -177,19 +188,19 @@ a:hover { color: var(--bleu-fonce); }
   color: var(--blanc); text-decoration: none; font-size: .9375rem; font-weight: 600;
 }
 .nav__inscription .bouton { padding: .6rem 1rem; font-size: .9375rem; }
-.nav__lien:hover { background: var(--bitume-clair); color: var(--blanc); }
-.nav__lien[aria-current="page"] { color: var(--jaune); }
+.nav__lien:hover { background: var(--bleu-profond); color: var(--blanc); }
+.nav__lien[aria-current="page"] { color: var(--accent-sombre); }
 
 .entete__actions { display: flex; align-items: center; gap: .75rem; flex: 0 0 auto; }
 .tel-entete {
   display: inline-flex; align-items: center; gap: .5rem;
   color: var(--blanc); text-decoration: none; font-weight: 700; white-space: nowrap;
 }
-.tel-entete svg { width: 1.1rem; height: 1.1rem; fill: var(--jaune); }
+.tel-entete svg { width: 1.1rem; height: 1.1rem; fill: var(--accent-sombre); }
 
 .bouton-menu {
   display: none; align-items: center; gap: .5rem;
-  background: var(--bitume-clair); color: var(--blanc);
+  background: var(--bleu-profond); color: var(--blanc);
   border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
   font: inherit; font-size: var(--petit); font-weight: 700;
   padding: .6rem .9rem; cursor: pointer; min-height: 44px;
@@ -203,7 +214,7 @@ a:hover { color: var(--bleu-fonce); }
   .tel-entete__texte { display: none; }
   .nav {
     position: absolute; left: 0; right: 0; top: 100%;
-    background: var(--bitume); border-bottom: 3px solid var(--jaune);
+    background: var(--bleu-nuit); border-bottom: 3px solid var(--rouge);
     margin: 0; padding: .5rem 1.25rem 1.25rem;
     display: none;
   }
@@ -225,7 +236,7 @@ a:hover { color: var(--bleu-fonce); }
 }
 .bouton:hover { transform: translateY(-1px); }
 .bouton--principal { background: var(--action-fond); color: var(--action-texte); }
-.bouton--principal:hover { background: var(--jaune-fonce); color: var(--action-texte); }
+.bouton--principal:hover { background: var(--rouge-fonce); color: var(--action-texte); }
 .bouton--secondaire { background: transparent; color: var(--marque); border-color: var(--marque); }
 .bouton--secondaire:hover { background: var(--bleu-voile); color: var(--bleu-fonce); }
 .sur-fond-sombre .bouton--secondaire, .section--sombre .bouton--secondaire {
@@ -241,23 +252,23 @@ a:hover { color: var(--bleu-fonce); }
    6. Héros
    -------------------------------------------------------------------------- */
 .heros {
-  background: var(--bitume); color: var(--texte-sombre);
+  background: var(--bleu-nuit); color: var(--texte-sombre);
   position: relative; overflow: hidden;
   padding-block: 4.5rem 4rem;
 }
 /* Marquage au sol : une bande discontinue en fond, tracée en CSS. */
 .heros::after {
   content: ""; position: absolute; inset: auto 0 0 0; height: 10px;
-  background: repeating-linear-gradient(90deg, var(--jaune) 0 3rem, transparent 3rem 5.5rem);
-  opacity: .9;
+  background: repeating-linear-gradient(90deg, var(--blanc) 0 3rem, transparent 3rem 5.5rem);
+  opacity: .85;
 }
 .heros__grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 3rem; align-items: center; }
 .heros h1 { margin-bottom: 1rem; }
-.heros h1 em { font-style: normal; color: var(--jaune); }
+.heros h1 em { font-style: normal; color: var(--accent-sombre); }
 .heros__accroche { font-size: 1.25rem; color: rgba(255,255,255,.85); max-width: 34rem; }
 .heros__preuves { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; gap: .6rem; }
 .heros__preuves li { display: flex; align-items: flex-start; gap: .6rem; font-size: var(--petit); color: rgba(255,255,255,.9); }
-.heros__preuves svg { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; margin-top: .2rem; fill: var(--jaune); }
+.heros__preuves svg { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; margin-top: .2rem; fill: var(--accent-sombre); }
 
 .encart-devis {
   background: var(--blanc); color: var(--texte);
@@ -296,12 +307,12 @@ a:hover { color: var(--bleu-fonce); }
 .carte__prix { font-weight: 900; font-size: 1.5rem; color: var(--texte); margin: .25rem 0 .75rem; }
 .carte__prix small { display: block; font-size: var(--mention); font-weight: 600; color: var(--texte-doux); }
 .carte__pied { margin-top: auto; padding-top: 1rem; }
-.carte--formation { border-top: 4px solid var(--jaune); }
+.carte--formation { border-top: 4px solid var(--rouge); }
 
 .liste-cochee { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; gap: .55rem; }
 .liste-cochee li { display: flex; align-items: flex-start; gap: .6rem; font-size: var(--petit); }
 .liste-cochee svg { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; margin-top: .25rem; fill: var(--marque); }
-.section--sombre .liste-cochee svg { fill: var(--jaune); }
+.section--sombre .liste-cochee svg { fill: var(--accent-sombre); }
 
 /* Étapes numérotées */
 .etape { position: relative; padding-left: 3.75rem; }
@@ -309,7 +320,7 @@ a:hover { color: var(--bleu-fonce); }
   position: absolute; left: 0; top: 0;
   width: 2.75rem; height: 2.75rem; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--jaune); color: var(--bitume);
+  background: var(--rouge); color: var(--blanc);
   font-weight: 900; font-size: 1.125rem;
 }
 .etape h3 { margin-bottom: .3rem; font-size: 1.2rem; }
@@ -318,7 +329,7 @@ a:hover { color: var(--bleu-fonce); }
 
 /* Chiffres clés */
 .chiffre { text-align: left; }
-.chiffre__valeur { display: block; font-size: clamp(2.2rem, 1.6rem + 2vw, 3rem); font-weight: 900; color: var(--jaune); line-height: 1; }
+.chiffre__valeur { display: block; font-size: clamp(2.2rem, 1.6rem + 2vw, 3rem); font-weight: 900; color: var(--accent-sombre); line-height: 1; }
 .chiffre p { font-size: var(--petit); margin: .5rem 0 0; color: rgba(255,255,255,.85); }
 
 /* Avis */
@@ -327,7 +338,7 @@ a:hover { color: var(--bleu-fonce); }
 .avis figcaption { font-size: var(--mention); color: var(--texte-doux); font-weight: 600; }
 .note { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
 .note__etoiles { display: inline-flex; gap: .1rem; }
-.note__etoiles svg { width: 1.1rem; height: 1.1rem; fill: var(--jaune); stroke: var(--bitume); stroke-width: 1.2; }
+.note__etoiles svg { width: 1.1rem; height: 1.1rem; fill: var(--rouge); stroke: var(--encre); stroke-width: .8; }
 .note__texte { font-size: var(--mention); font-weight: 700; }
 
 /* --------------------------------------------------------------------------
@@ -385,7 +396,7 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
    -------------------------------------------------------------------------- */
 .photo {
   display: flex; align-items: center; justify-content: center; text-align: center;
-  background: repeating-linear-gradient(135deg, var(--gris) 0 12px, #eaeef6 12px 24px);
+  background: repeating-linear-gradient(135deg, var(--gris) 0 12px, #e3e9f6 12px 24px);
   border: 2px dashed var(--trait); border-radius: var(--rayon-large);
   color: var(--texte-doux); font-size: var(--mention); font-weight: 600;
   padding: 1.5rem; min-height: 16rem;
@@ -441,10 +452,10 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 /* --------------------------------------------------------------------------
    14. Pied de page
    -------------------------------------------------------------------------- */
-.pied { background: var(--bitume); color: var(--blanc); padding-block: 3.5rem 2rem; }
+.pied { background: var(--bleu-nuit); color: var(--blanc); padding-block: 3.5rem 2rem; }
 .pied a { color: rgba(255,255,255,.85); text-decoration: none; }
-.pied a:hover { color: var(--jaune); text-decoration: underline; }
-.pied h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .1em; color: var(--jaune); margin-bottom: 1rem; }
+.pied a:hover { color: var(--accent-sombre); text-decoration: underline; }
+.pied h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent-sombre); margin-bottom: 1rem; }
 .pied__grille { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
 .pied ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: var(--petit); }
 .pied address { font-style: normal; font-size: var(--petit); line-height: 1.8; }
@@ -467,12 +478,12 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 .pile > * + * { margin-top: 1rem; }
 .badge {
   display: inline-flex; align-items: center; gap: .4rem;
-  background: var(--jaune); color: var(--bitume);
-  border: 2px solid var(--bitume);
+  background: var(--turquoise); color: var(--blanc);
+  border: 2px solid transparent;
   border-radius: 999px; padding: .2rem .8rem;
   font-size: var(--mention); font-weight: 800;
 }
-.badge--sombre { background: transparent; color: var(--jaune); border-color: var(--jaune); }
+.badge--sombre { background: transparent; color: var(--accent-sombre); border-color: var(--accent-sombre); }
 .visuellement-cache {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
@@ -487,12 +498,8 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 
   <div class="conteneur entete__barre">
     <a class="logo" href="#index.html" aria-current="page">
-      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-        <rect width="40" height="40" rx="10" fill="#ffc94a"/>
-        <path d="M8 30 20 10l12 20z" fill="#0e1420"/>
-        <path d="M19 20h2v3h-2zm0 5h2v3h-2z" fill="#ffc94a"/>
-      </svg>
-      <span class="logo__marque">Auto Moto École Bizot<span>Paris 12e</span></span>
+      <span class="logo__lockup" aria-hidden="true"><svg class="logo__vehicule" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg><span class="logo__mot">AUT<i class="logo__o"></i>M<i class="logo__o"></i>T<i class="logo__o"></i></span><svg class="logo__vehicule" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><span class="logo__sous" aria-hidden="true">ÉCOLE · BIZOT · PARIS 12<sup>e</sup></span>
+      <span class="visuellement-cache">Auto Moto École Bizot — accueil</span>
     </a>
     <button class="bouton-menu" type="button" data-menu-bouton aria-expanded="false" aria-controls="menu">
       Menu

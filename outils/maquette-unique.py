@@ -100,7 +100,7 @@ def construire():
 })();
 """ % _json(titres)
 
-    return """<title>Maquette — Auto Moto École Bizot</title>
+    return """<title>Maquette Auto-école Bizot</title>
 <style>
 %s
 /* Assemblage en fichier unique : les douze pages cohabitent, une seule est
