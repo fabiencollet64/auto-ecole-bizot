@@ -1,0 +1,1773 @@
+<title>Maquette — Auto Moto École Bizot</title>
+<style>
+/* ==========================================================================
+   Auto Moto École Bizot — maquette Collet Marketing
+   Feuille de style unique. Aucune dépendance, aucune étape de compilation.
+
+   Ordre : jetons → socle → mise en page → composants → utilitaires.
+   Aucune couleur n'est écrite en dur hors du bloc « jetons ».
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Jetons
+   -------------------------------------------------------------------------- */
+:root {
+  /* Palette — six valeurs, aucune autre.
+     Le thème vient de la route : bitume, marquage au sol, bleu de signalisation. */
+  --bitume:       #0e1420;  /* texte principal, en-tête, pied de page          */
+  --bitume-clair: #1b2534;  /* aplats secondaires sur fond sombre              */
+  --bleu:         #1b4de4;  /* couleur de marque, liens, aplats                */
+  --jaune:        #ffc94a;  /* action principale et marquage au sol            */
+  --gris:         #f4f6fa;  /* fonds de section clairs                         */
+  --blanc:        #ffffff;
+
+  /* Teintes dérivées — états d'interface uniquement (survol, bordures). */
+  --bleu-voile:   #e8eeff;  /* bleu 10 % sur blanc : fonds d'encadré           */
+  --bleu-fonce:   #1740bd;  /* survol du bouton bleu                           */
+  --jaune-fonce:  #f0b62b;  /* survol du bouton jaune                          */
+  --bitume-doux:  #4a5468;  /* texte secondaire — 7,4:1 sur blanc              */
+  --trait:        #dde3ee;
+
+  /* Rôles — les composants ne consomment jamais la palette directement. */
+  --fond-page:      var(--blanc);
+  --fond-clair:     var(--gris);
+  --fond-sombre:    var(--bitume);
+  --texte:          var(--bitume);
+  --texte-doux:     var(--bitume-doux);
+  --texte-sombre:   var(--blanc);      /* texte posé sur --fond-sombre         */
+  --action-fond:    var(--jaune);      /* bitume sur jaune = 11,6:1            */
+  --action-texte:   var(--bitume);
+  --marque:         var(--bleu);       /* bleu sur blanc = 6,5:1               */
+
+  /* Typographie — tout en rem, jamais en px : le réglage « taille du texte »
+     du navigateur doit rester opérant. */
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --corps:   1.125rem;  /* 18 px minimum sur tout le texte courant */
+  --petit:   1rem;
+  --mention: 0.875rem;  /* mentions légales et micro-libellés uniquement */
+
+  /* Rythme */
+  --pas:        0.5rem;
+  --gouttiere:  1.5rem;
+  --section:    5rem;
+  --largeur:    72rem;
+  --largeur-entete: 82rem;   /* l'en-tête tient sur une ligne jusqu'à 80rem */
+  --lecture:    38rem;   /* ~68 caractères */
+
+  --rayon:       0.75rem;
+  --rayon-large: 1.25rem;
+  --ombre:       0 1px 2px rgba(14, 20, 32, .06), 0 8px 24px rgba(14, 20, 32, .07);
+  --ombre-forte: 0 18px 48px rgba(14, 20, 32, .18);
+}
+
+/* --------------------------------------------------------------------------
+   2. Socle
+   -------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+body {
+  margin: 0;
+  font-family: var(--police);
+  font-size: var(--corps);
+  line-height: 1.65;
+  color: var(--texte);
+  background: var(--fond-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { line-height: 1.15; margin: 0 0 .6em; letter-spacing: -.02em; font-weight: 800; }
+h1 { font-size: clamp(2.1rem, 1.4rem + 2.8vw, 3.5rem); }
+h2 { font-size: clamp(1.7rem, 1.2rem + 1.9vw, 2.5rem); }
+h3 { font-size: clamp(1.2rem, 1.05rem + .6vw, 1.5rem); }
+h4 { font-size: 1.125rem; }
+
+p, ul, ol, dl, table { margin: 0 0 1.2em; }
+p { max-width: var(--lecture); }
+img, svg { max-width: 100%; }
+img { height: auto; display: block; }
+
+a { color: var(--marque); text-underline-offset: .18em; }
+a:hover { color: var(--bleu-fonce); }
+
+:focus-visible {
+  outline: 3px solid var(--bleu);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.sur-fond-sombre :focus-visible, .pied :focus-visible { outline-color: var(--jaune); }
+
+.saut-navigation {
+  position: absolute; top: 0; left: 0; z-index: 100;
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+  background: var(--jaune); color: var(--bitume);
+  padding: .75rem 1.25rem; font-weight: 700; border-radius: 0 0 var(--rayon) 0;
+}
+.saut-navigation:focus {
+  width: auto; height: auto; overflow: visible; clip-path: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. Mise en page
+   -------------------------------------------------------------------------- */
+.conteneur {
+  width: min(100% - 2.5rem, var(--largeur));
+  margin-inline: auto;
+}
+
+.section { padding-block: var(--section); }
+.section--serree { padding-block: 3.5rem; }
+.section--claire { background: var(--fond-clair); }
+.section--sombre { background: var(--fond-sombre); color: var(--texte-sombre); }
+.section--sombre h2, .section--sombre h3 { color: var(--texte-sombre); }
+.section--sombre a { color: var(--jaune); }
+
+.section__intro { max-width: 44rem; margin-bottom: 2.5rem; }
+.section__intro p { max-width: none; color: var(--texte-doux); font-size: 1.1875rem; }
+.section--sombre .section__intro p { color: rgba(255,255,255,.82); }
+
+.surtitre {
+  display: inline-block;
+  font-size: var(--mention); font-weight: 800;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--marque); margin-bottom: .75rem;
+}
+.section--sombre .surtitre { color: var(--jaune); }
+
+.grille { display: grid; gap: var(--gouttiere); }
+.grille--2 { grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
+.grille--3 { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+.grille--4 { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.grille--texte-media { grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); align-items: center; gap: 3rem; }
+
+/* --------------------------------------------------------------------------
+   4. En-tête
+   -------------------------------------------------------------------------- */
+.bandeau-maquette {
+  background: var(--bitume-clair); color: var(--blanc);
+  font-size: var(--mention); text-align: center;
+  padding: .55rem 1rem;
+}
+.bandeau-maquette a { color: var(--jaune); font-weight: 700; }
+.bandeau-maquette strong { color: var(--jaune); }
+
+.entete {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bitume); color: var(--texte-sombre);
+  border-bottom: 3px solid var(--jaune);
+}
+.entete__barre {
+  width: min(100% - 2.5rem, var(--largeur-entete));
+  display: flex; align-items: center; gap: 1rem;
+  min-height: 4.5rem;
+}
+.logo { display: inline-flex; align-items: center; gap: .65rem; text-decoration: none; color: var(--blanc); flex: 0 0 auto; }
+.logo__marque { font-weight: 900; font-size: 1.0625rem; letter-spacing: -.02em; line-height: 1.15; max-width: 9.5rem; }
+.logo__marque span { display: block; font-size: .625rem; font-weight: 700; letter-spacing: .18em; color: var(--jaune); }
+
+.nav { margin-left: auto; }
+.nav__liste { display: flex; align-items: center; gap: .1rem; list-style: none; margin: 0; padding: 0; }
+.nav__lien {
+  display: block; padding: .55rem .6rem; border-radius: var(--rayon); white-space: nowrap;
+  color: var(--blanc); text-decoration: none; font-size: .9375rem; font-weight: 600;
+}
+.nav__inscription .bouton { padding: .6rem 1rem; font-size: .9375rem; }
+.nav__lien:hover { background: var(--bitume-clair); color: var(--blanc); }
+.nav__lien[aria-current="page"] { color: var(--jaune); }
+
+.entete__actions { display: flex; align-items: center; gap: .75rem; flex: 0 0 auto; }
+.tel-entete {
+  display: inline-flex; align-items: center; gap: .5rem;
+  color: var(--blanc); text-decoration: none; font-weight: 700; white-space: nowrap;
+}
+.tel-entete svg { width: 1.1rem; height: 1.1rem; fill: var(--jaune); }
+
+.bouton-menu {
+  display: none; align-items: center; gap: .5rem;
+  background: var(--bitume-clair); color: var(--blanc);
+  border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
+  font: inherit; font-size: var(--petit); font-weight: 700;
+  padding: .6rem .9rem; cursor: pointer; min-height: 44px;
+}
+
+@media (max-width: 80rem) {
+  .logo { order: 1; }
+  .entete__actions { order: 2; margin-left: auto; }
+  .bouton-menu { display: inline-flex; order: 3; }
+  .nav { order: 4; }
+  .tel-entete__texte { display: none; }
+  .nav {
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--bitume); border-bottom: 3px solid var(--jaune);
+    margin: 0; padding: .5rem 1.25rem 1.25rem;
+    display: none;
+  }
+  .nav[data-ouvert="true"] { display: block; }
+  .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
+  .nav__lien { padding: .85rem .5rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+  .nav__inscription { margin-top: .9rem; }
+}
+
+/* --------------------------------------------------------------------------
+   5. Boutons
+   -------------------------------------------------------------------------- */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px; padding: .8rem 1.4rem;
+  border: 2px solid transparent; border-radius: var(--rayon);
+  font: inherit; font-size: var(--petit); font-weight: 800; text-decoration: none;
+  cursor: pointer; transition: background-color .15s ease, transform .15s ease;
+}
+.bouton:hover { transform: translateY(-1px); }
+.bouton--principal { background: var(--action-fond); color: var(--action-texte); }
+.bouton--principal:hover { background: var(--jaune-fonce); color: var(--action-texte); }
+.bouton--secondaire { background: transparent; color: var(--marque); border-color: var(--marque); }
+.bouton--secondaire:hover { background: var(--bleu-voile); color: var(--bleu-fonce); }
+.sur-fond-sombre .bouton--secondaire, .section--sombre .bouton--secondaire {
+  color: var(--blanc); border-color: rgba(255,255,255,.55);
+}
+.sur-fond-sombre .bouton--secondaire:hover, .section--sombre .bouton--secondaire:hover {
+  background: rgba(255,255,255,.1); color: var(--blanc);
+}
+.bouton--large { width: 100%; }
+.boutons { display: flex; flex-wrap: wrap; gap: .75rem; }
+
+/* --------------------------------------------------------------------------
+   6. Héros
+   -------------------------------------------------------------------------- */
+.heros {
+  background: var(--bitume); color: var(--texte-sombre);
+  position: relative; overflow: hidden;
+  padding-block: 4.5rem 4rem;
+}
+/* Marquage au sol : une bande discontinue en fond, tracée en CSS. */
+.heros::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 10px;
+  background: repeating-linear-gradient(90deg, var(--jaune) 0 3rem, transparent 3rem 5.5rem);
+  opacity: .9;
+}
+.heros__grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 3rem; align-items: center; }
+.heros h1 { margin-bottom: 1rem; }
+.heros h1 em { font-style: normal; color: var(--jaune); }
+.heros__accroche { font-size: 1.25rem; color: rgba(255,255,255,.85); max-width: 34rem; }
+.heros__preuves { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; gap: .6rem; }
+.heros__preuves li { display: flex; align-items: flex-start; gap: .6rem; font-size: var(--petit); color: rgba(255,255,255,.9); }
+.heros__preuves svg { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; margin-top: .2rem; fill: var(--jaune); }
+
+.encart-devis {
+  background: var(--blanc); color: var(--texte);
+  border-radius: var(--rayon-large); box-shadow: var(--ombre-forte);
+  padding: 1.75rem;
+}
+.encart-devis h2 { font-size: 1.4rem; }
+.encart-devis p { font-size: var(--petit); color: var(--texte-doux); }
+
+/* Bandeau de réassurance sous le héros */
+.rassurance { background: var(--bleu-voile); border-bottom: 1px solid var(--trait); }
+.rassurance__liste {
+  list-style: none; margin: 0; padding: 1.1rem 0;
+  display: flex; flex-wrap: wrap; gap: .75rem 2.25rem; justify-content: space-between;
+}
+.rassurance__liste li { display: flex; align-items: center; gap: .55rem; font-size: var(--petit); font-weight: 600; }
+.rassurance__liste svg { width: 1.15rem; height: 1.15rem; fill: var(--marque); flex: 0 0 auto; }
+
+/* --------------------------------------------------------------------------
+   7. Cartes
+   -------------------------------------------------------------------------- */
+.carte {
+  display: flex; flex-direction: column;
+  background: var(--blanc); border: 1px solid var(--trait);
+  border-radius: var(--rayon-large); padding: 1.75rem;
+  box-shadow: var(--ombre);
+}
+.carte h3 { margin-bottom: .4rem; }
+.carte p { max-width: none; color: var(--texte-doux); font-size: var(--petit); }
+.carte__icone {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 3rem; height: 3rem; border-radius: var(--rayon);
+  background: var(--bleu-voile); margin-bottom: 1rem;
+}
+.carte__icone svg { width: 1.6rem; height: 1.6rem; fill: var(--marque); }
+.carte__prix { font-weight: 900; font-size: 1.5rem; color: var(--texte); margin: .25rem 0 .75rem; }
+.carte__prix small { display: block; font-size: var(--mention); font-weight: 600; color: var(--texte-doux); }
+.carte__pied { margin-top: auto; padding-top: 1rem; }
+.carte--formation { border-top: 4px solid var(--jaune); }
+
+.liste-cochee { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; gap: .55rem; }
+.liste-cochee li { display: flex; align-items: flex-start; gap: .6rem; font-size: var(--petit); }
+.liste-cochee svg { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; margin-top: .25rem; fill: var(--marque); }
+.section--sombre .liste-cochee svg { fill: var(--jaune); }
+
+/* Étapes numérotées */
+.etape { position: relative; padding-left: 3.75rem; }
+.etape__numero {
+  position: absolute; left: 0; top: 0;
+  width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--jaune); color: var(--bitume);
+  font-weight: 900; font-size: 1.125rem;
+}
+.etape h3 { margin-bottom: .3rem; font-size: 1.2rem; }
+.etape p { color: var(--texte-doux); font-size: var(--petit); max-width: none; margin: 0; }
+.section--sombre .etape p { color: rgba(255,255,255,.8); }
+
+/* Chiffres clés */
+.chiffre { text-align: left; }
+.chiffre__valeur { display: block; font-size: clamp(2.2rem, 1.6rem + 2vw, 3rem); font-weight: 900; color: var(--jaune); line-height: 1; }
+.chiffre p { font-size: var(--petit); margin: .5rem 0 0; color: rgba(255,255,255,.85); }
+
+/* Avis */
+.avis { background: var(--blanc); border: 1px solid var(--trait); border-radius: var(--rayon-large); padding: 1.5rem; box-shadow: var(--ombre); }
+.avis blockquote { margin: 0 0 1rem; font-size: var(--petit); }
+.avis figcaption { font-size: var(--mention); color: var(--texte-doux); font-weight: 600; }
+.note { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+.note__etoiles { display: inline-flex; gap: .1rem; }
+.note__etoiles svg { width: 1.1rem; height: 1.1rem; fill: var(--jaune); stroke: var(--bitume); stroke-width: 1.2; }
+.note__texte { font-size: var(--mention); font-weight: 700; }
+
+/* --------------------------------------------------------------------------
+   8. Tableaux de tarifs
+   -------------------------------------------------------------------------- */
+.tableau-enveloppe { overflow-x: auto; border: 1px solid var(--trait); border-radius: var(--rayon-large); background: var(--blanc); }
+table.tarifs { width: 100%; border-collapse: collapse; font-size: var(--petit); min-width: 34rem; margin: 0; }
+table.tarifs caption { text-align: left; padding: 1.1rem 1.25rem; font-weight: 800; font-size: 1.125rem; }
+table.tarifs th, table.tarifs td { padding: .85rem 1.25rem; text-align: left; border-top: 1px solid var(--trait); }
+table.tarifs thead th { background: var(--gris); font-size: var(--mention); text-transform: uppercase; letter-spacing: .06em; }
+table.tarifs tbody tr:nth-child(even) { background: var(--gris); }
+table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+
+/* --------------------------------------------------------------------------
+   9. Questions fréquentes — repliables, sans JavaScript obligatoire
+   -------------------------------------------------------------------------- */
+.faq { display: grid; gap: .75rem; max-width: 52rem; }
+.faq details { background: var(--blanc); border: 1px solid var(--trait); border-radius: var(--rayon); }
+.faq summary {
+  cursor: pointer; list-style: none; padding: 1.1rem 1.25rem;
+  font-weight: 700; display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+  min-height: 48px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-size: 1.5rem; color: var(--marque); line-height: 1; }
+.faq details[open] summary::after { content: "–"; }
+.faq details > div { padding: 0 1.25rem 1.25rem; }
+.faq p { margin: 0; font-size: var(--petit); color: var(--texte-doux); max-width: 46rem; }
+.faq p + p { margin-top: .75rem; }
+
+/* --------------------------------------------------------------------------
+   10. Formulaires
+   -------------------------------------------------------------------------- */
+.champ { margin-bottom: 1rem; }
+.champ label { display: block; font-size: var(--petit); font-weight: 700; margin-bottom: .35rem; }
+.champ input, .champ select, .champ textarea {
+  width: 100%; font: inherit; font-size: var(--petit);
+  padding: .7rem .85rem; min-height: 48px;
+  border: 2px solid var(--trait); border-radius: var(--rayon);
+  background: var(--blanc); color: var(--texte);
+}
+.champ textarea { min-height: 7rem; resize: vertical; }
+.champ input:focus, .champ select:focus, .champ textarea:focus { border-color: var(--bleu); }
+.champ__aide { font-size: var(--mention); color: var(--texte-doux); margin: .35rem 0 0; }
+.champs-2 { display: grid; gap: 0 1rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.mention { font-size: var(--mention); color: var(--texte-doux); }
+.formulaire__retour {
+  margin-top: 1rem; padding: 1rem 1.15rem; border-radius: var(--rayon);
+  background: var(--bleu-voile); border-left: 4px solid var(--bleu); font-size: var(--petit);
+}
+.formulaire__retour[hidden] { display: none; }
+
+/* --------------------------------------------------------------------------
+   11. Emplacements photographiques
+   -------------------------------------------------------------------------- */
+.photo {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  background: repeating-linear-gradient(135deg, var(--gris) 0 12px, #eaeef6 12px 24px);
+  border: 2px dashed var(--trait); border-radius: var(--rayon-large);
+  color: var(--texte-doux); font-size: var(--mention); font-weight: 600;
+  padding: 1.5rem; min-height: 16rem;
+}
+.photo span { max-width: 22rem; }
+.photo--haute { min-height: 22rem; }
+.photo--large { min-height: 12rem; }
+
+/* Plan d'accès */
+.plan {
+  border-radius: var(--rayon-large); overflow: hidden;
+  border: 1px solid var(--trait); background: var(--gris); min-height: 18rem;
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+  text-align: center; font-size: var(--mention); color: var(--texte-doux);
+}
+
+/* --------------------------------------------------------------------------
+   12. Blog
+   -------------------------------------------------------------------------- */
+.article-carte h3 { font-size: 1.25rem; }
+.article-carte h3 a { text-decoration: none; color: var(--texte); }
+.article-carte h3 a:hover { color: var(--marque); }
+.article-meta { font-size: var(--mention); color: var(--texte-doux); font-weight: 600; margin-bottom: .5rem; }
+
+.article { max-width: 44rem; }
+.article p, .article li { font-size: 1.1875rem; }
+.article h2 { margin-top: 2.5rem; }
+.article h3 { margin-top: 1.75rem; }
+.article ul, .article ol { padding-left: 1.25rem; }
+.article li { margin-bottom: .5rem; }
+.article__chapeau { font-size: 1.3rem !important; color: var(--texte-doux); max-width: none; }
+.encadre {
+  background: var(--bleu-voile); border-left: 4px solid var(--bleu);
+  border-radius: 0 var(--rayon) var(--rayon) 0; padding: 1.25rem 1.5rem; margin: 2rem 0;
+}
+.encadre p { margin: 0; font-size: var(--petit) !important; }
+.encadre p + p { margin-top: .75rem; }
+
+.fil-ariane { font-size: var(--mention); color: var(--texte-doux); padding-top: 1.5rem; }
+.fil-ariane ol { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; }
+.fil-ariane li::after { content: "›"; margin-left: .4rem; color: var(--trait); }
+.fil-ariane li:last-child::after { content: ""; }
+
+/* --------------------------------------------------------------------------
+   13. Appel à l'action de bas de page
+   -------------------------------------------------------------------------- */
+.appel { background: var(--bleu); color: var(--blanc); border-radius: var(--rayon-large); padding: clamp(2rem, 1rem + 4vw, 3.5rem); }
+.appel h2 { color: var(--blanc); }
+.appel p { color: rgba(255,255,255,.9); max-width: 40rem; font-size: 1.1875rem; }
+.appel .bouton--secondaire { color: var(--blanc); border-color: rgba(255,255,255,.6); }
+.appel .bouton--secondaire:hover { background: rgba(255,255,255,.12); color: var(--blanc); }
+
+/* --------------------------------------------------------------------------
+   14. Pied de page
+   -------------------------------------------------------------------------- */
+.pied { background: var(--bitume); color: var(--blanc); padding-block: 3.5rem 2rem; }
+.pied a { color: rgba(255,255,255,.85); text-decoration: none; }
+.pied a:hover { color: var(--jaune); text-decoration: underline; }
+.pied h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .1em; color: var(--jaune); margin-bottom: 1rem; }
+.pied__grille { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.pied ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: var(--petit); }
+.pied address { font-style: normal; font-size: var(--petit); line-height: 1.8; }
+.pied__horaires { font-size: var(--petit); }
+.pied__horaires div { display: flex; justify-content: space-between; gap: 1rem; max-width: 18rem; padding: .15rem 0; }
+.pied__horaires dt { color: rgba(255,255,255,.75); }
+.pied__horaires dd { margin: 0; font-weight: 600; }
+.pied__bas {
+  margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,.16);
+  display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; justify-content: space-between;
+  font-size: var(--mention); color: rgba(255,255,255,.7);
+}
+
+/* --------------------------------------------------------------------------
+   15. Utilitaires
+   -------------------------------------------------------------------------- */
+.centre { text-align: center; }
+.centre p { margin-inline: auto; }
+.sans-marge-bas { margin-bottom: 0; }
+.pile > * + * { margin-top: 1rem; }
+.badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  background: var(--jaune); color: var(--bitume);
+  border: 2px solid var(--bitume);
+  border-radius: 999px; padding: .2rem .8rem;
+  font-size: var(--mention); font-weight: 800;
+}
+.badge--sombre { background: transparent; color: var(--jaune); border-color: var(--jaune); }
+.visuellement-cache {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Assemblage en fichier unique : les douze pages cohabitent, une seule est
+   affichée à la fois. */
+.page[hidden] { display: none !important; }
+</style>
+<a class="saut-navigation" href="#contenu">Aller au contenu</a>
+<div class="bandeau-maquette">Maquette de démonstration réalisée par <strong>Collet Marketing</strong> pour Auto Moto École Bizot — contenus, tarifs et photographies à valider avant mise en ligne.</div>
+
+  <div class="conteneur entete__barre">
+    <a class="logo" href="#index.html" aria-current="page">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <rect width="40" height="40" rx="10" fill="#ffc94a"/>
+        <path d="M8 30 20 10l12 20z" fill="#0e1420"/>
+        <path d="M19 20h2v3h-2zm0 5h2v3h-2z" fill="#ffc94a"/>
+      </svg>
+      <span class="logo__marque">Auto Moto École Bizot<span>Paris 12e</span></span>
+    </a>
+    <button class="bouton-menu" type="button" data-menu-bouton aria-expanded="false" aria-controls="menu">
+      Menu
+    </button>
+    <nav class="nav" id="menu" data-menu aria-label="Navigation principale">
+      <ul class="nav__liste"><li><a class="nav__lien" href="#permis-voiture.html">Permis voiture</a></li><li><a class="nav__lien" href="#permis-moto.html">Permis moto</a></li><li><a class="nav__lien" href="#code-de-la-route.html">Code</a></li><li><a class="nav__lien" href="#tarifs.html">Tarifs</a></li><li><a class="nav__lien" href="#financement.html">Financement</a></li><li><a class="nav__lien" href="#auto-ecole-paris-12.html">Paris 12</a></li><li><a class="nav__lien" href="#blog.html">Conseils</a></li><li class="nav__inscription"><a class="bouton bouton--principal" href="#contact.html">S'inscrire</a></li></ul>
+    </nav>
+    <div class="entete__actions">
+      <a class="tel-entete" href="tel:+33145852214"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .58 3.6 1 1 0 0 1-.25 1z"/></svg><span class="tel-entete__texte">01 45 85 22 14</span></a>
+    </div>
+  </div>
+
+<div id="contenu">
+<section class="page" data-page="index.html" hidden>
+
+
+<section class="heros sur-fond-sombre">
+  <div class="conteneur heros__grille">
+    <div>
+      <span class="badge badge--sombre">Auto-école familiale · Paris 12e</span>
+      <h1>Votre permis <em>voiture</em> ou <em>moto</em> à Paris 12, sans stress</h1>
+      <p class="heros__accroche">Formation au permis B, à la moto et au code de la route,
+      à trois minutes du métro Michel Bizot. Des moniteurs disponibles, des places d'examen
+      suivies, et un forfait tout inclus annoncé dès le premier rendez-vous.</p>
+      <ul class="heros__preuves">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span><strong>990 € tout inclus</strong> — forfait 20 h, boîte manuelle ou automatique</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span><strong>890 € tout inclus</strong> — forfait moto A2 de 20 h</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span><strong>Jusqu'à 1 000 € d'aide</strong> Région Île-de-France pour les 18-25 ans</span></li>
+      </ul>
+      <div class="boutons" style="margin-top:2rem">
+        <a class="bouton bouton--principal" href="#tarifs.html">Voir les tarifs</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+    </div>
+    <div class="encart-devis"><form class="pile" data-demo novalidate>
+  <h2>Être rappelé sous 24 h</h2>
+  <p>Laissez votre numéro : nous vous rappelons pour faire le point sur votre situation et le budget réel de votre permis.</p>
+  <div class="champs-2">
+    <div class="champ">
+      <label for="accueil-prenom">Prénom</label>
+      <input id="accueil-prenom" name="prenom" type="text" autocomplete="given-name" required>
+    </div>
+    <div class="champ">
+      <label for="accueil-tel">Téléphone</label>
+      <input id="accueil-tel" name="telephone" type="tel" autocomplete="tel" required>
+    </div>
+  </div>
+  <div class="champ">
+    <label for="accueil-formation">Formation souhaitée</label>
+    <select id="accueil-formation" name="formation"><option>Permis B — boîte manuelle</option><option>Permis B — boîte automatique</option><option>Conduite accompagnée (AAC)</option><option>Permis moto A1 / A2</option><option>Formation 125 cm³ (7 h)</option><option>Code de la route seul</option><option>Je ne sais pas encore</option></select>
+  </div>
+  <p class="champ"><button class="bouton bouton--principal bouton--large" type="submit">
+    Être rappelé gratuitement</button></p>
+  <p class="mention">Réponse sous 24 h ouvrées. Vos données servent uniquement à vous
+  recontacter et ne sont jamais transmises à un tiers.</p>
+  <div class="formulaire__retour" data-retour role="status" hidden></div>
+</form></div>
+  </div>
+</section>
+
+<section class="rassurance">
+  <div class="conteneur">
+    <ul class="rassurance__liste">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2 4 5v6.5c0 4.7 3.4 9.1 8 10.5 4.6-1.4 8-5.8 8-10.5V5zm-1 14-4-4 1.4-1.4L11 13.2l4.6-4.6L17 10z"/></svg><span>Auto-école agréée par la préfecture</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2C7.6 2 4 2.5 4 6v9.5A3.5 3.5 0 0 0 7.5 19L6 20.5v.5h12v-.5L16.5 19a3.5 3.5 0 0 0 3.5-3.5V6c0-3.5-3.6-4-8-4zM7.5 16A1.5 1.5 0 1 1 9 14.5 1.5 1.5 0 0 1 7.5 16zM11 11H6V6.5h5zm2 0V6.5h5V11zm3.5 5a1.5 1.5 0 1 1 1.5-1.5 1.5 1.5 0 0 1-1.5 1.5z"/></svg><span>Métro Michel Bizot — ligne 8</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg><span>Boîte manuelle et boîte automatique</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg><span>Permis moto A1, A2 et 125 cm³</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Nos formations</span>
+      <h2>Trois parcours, un seul interlocuteur</h2>
+      <p>Vous êtes suivi par le même moniteur du premier cours au jour de l'examen. Le
+      programme est fixé après une évaluation de départ, et le nombre d'heures réellement
+      utile vous est annoncé avant de signer.</p>
+    </div>
+    <div class="grille grille--3"><article class="carte carte--formation"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg></span><h3>Permis B — voiture</h3><p class="carte__prix">990 €<small>forfait 20 h, tout inclus</small></p><p>Boîte manuelle ou automatique, en formation classique, accompagnée ou supervisée.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Forfait 20 h tout inclus</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Conduite accompagnée dès 15 ans</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Boîte automatique en 13 h possible</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Formule accélérée sur demande</span></li></ul><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#permis-voiture.html">Voir la formation voiture</a></p></article><article class="carte carte--formation"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><h3>Permis moto — A1 et A2</h3><p class="carte__prix">890 €<small>forfait A2 20 h, tout inclus</small></p><p>Plateau et circulation avec un moniteur moto dédié, sur des machines adaptées à votre gabarit.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Forfait A2 20 h tout inclus</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Permis A1 dès 16 ans</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Passerelle A2 vers A en 7 h</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Formation 125 cm³ en 7 h</span></li></ul><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#permis-moto.html">Voir la formation moto</a></p></article><article class="carte carte--formation"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8 1.8V8h3.2zM8 11h8v2H8zm0 4h8v2H8z"/></svg></span><h3>Code de la route</h3><p class="carte__prix">Inclus<small>dans les forfaits permis</small></p><p>Cours en salle avec un enseignant et entraînement en ligne illimité depuis chez vous.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Accès en ligne illimité</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Cours en salle chaque semaine</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Inscription à l'examen prise en charge</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Code accéléré possible</span></li></ul><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#code-de-la-route.html">Voir la formation au code</a></p></article></div>
+  </div>
+</section>
+
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="grille grille--texte-media">
+      <div>
+        <span class="surtitre">L'auto-école</span>
+        <h2>Une école familiale, pas une usine à permis</h2>
+        <p>Auto Moto École Bizot est une structure indépendante du 12<sup>e</sup>
+        arrondissement. Les plannings sont tenus par la même équipe que celle qui vous
+        accueille : quand vous appelez, on sait où vous en êtes.</p>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Évaluation de départ offerte, sans engagement</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Leçons de 1 h ou 2 h, du lundi au samedi</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Véhicules récents en boîte manuelle et automatique</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Suivi de progression remis après chaque leçon</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Accompagnement du dossier ANTS de bout en bout</span></li>
+        </ul>
+        <p><a class="bouton bouton--secondaire" href="#a-propos.html">Découvrir l'équipe</a></p>
+      </div>
+      <div class="photo photo--haute" role="img" aria-label="l'équipe de l'auto-école devant l'agence, avenue du Général Michel Bizot"><span>Emplacement photo — l'équipe de l'auto-école devant l'agence, avenue du Général Michel Bizot</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--sombre">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">En bref</span>
+      <h2>Ce qui compte quand on choisit son auto-école</h2>
+    </div>
+    <div class="grille grille--4">
+      <div class="chiffre"><span class="chiffre__valeur">20 h</span>
+        <p>La formation minimale légale, incluse dans nos forfaits — et le point de départ
+        d'un programme ajusté à votre niveau.</p></div>
+      <div class="chiffre"><span class="chiffre__valeur">1 000 €</span>
+        <p>L'aide maximale de la Région Île-de-France pour les 18-25 ans, que nous montons
+        avec vous à l'inscription.</p></div>
+      <div class="chiffre"><span class="chiffre__valeur">3 min</span>
+        <p>À pied depuis le métro Michel Bizot, ligne 8. Bus 46 et 87 au pied de l'agence.</p></div>
+      <div class="chiffre"><span class="chiffre__valeur">6 j / 7</span>
+        <p>Du lundi au samedi, leçons de conduite et cours de code en salle.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Comment ça se passe</span>
+      <h2>De votre premier appel au jour de l'examen</h2>
+      <p>Aucune étape administrative n'est laissée à votre charge&nbsp;: nous montons le
+      dossier, réservons les examens et suivons les délais de convocation.</p>
+    </div>
+    <div class="grille grille--4"><div class="etape"><span class="etape__numero">1</span><h3>Le premier rendez-vous</h3><p>Vingt minutes à l'agence : évaluation de départ, nombre d'heures conseillé et budget annoncé sans surprise.</p></div><div class="etape"><span class="etape__numero">2</span><h3>Le dossier</h3><p>Nous créons votre compte ANTS, réunissons les pièces et suivons l'attribution de votre numéro NEPH.</p></div><div class="etape"><span class="etape__numero">3</span><h3>Le code</h3><p>Cours en salle et entraînement en ligne illimité, puis inscription à l'examen théorique dès que vos scores le permettent.</p></div><div class="etape"><span class="etape__numero">4</span><h3>La conduite et l'examen</h3><p>Leçons de 1 h ou 2 h avec le même moniteur, bilan à mi-parcours, puis présentation à l'examen pratique.</p></div></div>
+  </div>
+</section>
+
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Ils ont passé leur permis ici</span>
+      <h2>Ce que disent les élèves</h2>
+      <p>Emplacement prévu pour vos avis Google réels — le module se connecte à la fiche
+      Google Business Profile et se met à jour tout seul.</p>
+    </div>
+    <div class="grille grille--3"><figure class="avis">
+  <p class="note"><span class="note__etoiles" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg></span>
+    <span class="note__texte">5 sur 5</span></p>
+  <blockquote>« Équipe très à l'écoute, on sent qu'ils connaissent chaque élève. J'ai eu mon permis du premier coup après un parcours calme et bien organisé. »</blockquote>
+  <figcaption>Avis d'illustration — à remplacer par un avis Google</figcaption>
+</figure><figure class="avis">
+  <p class="note"><span class="note__etoiles" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg></span>
+    <span class="note__texte">5 sur 5</span></p>
+  <blockquote>« Les moniteurs prennent le temps d'expliquer et les créneaux sont faciles à trouver, même en travaillant. »</blockquote>
+  <figcaption>Avis d'illustration — à remplacer par un avis Google</figcaption>
+</figure><figure class="avis">
+  <p class="note"><span class="note__etoiles" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z"/></svg></span>
+    <span class="note__texte">5 sur 5</span></p>
+  <blockquote>« Formation moto sérieuse, du plateau jusqu'à la circulation dans Paris. »</blockquote>
+  <figcaption>Avis d'illustration — à remplacer par un avis Google</figcaption>
+</figure></div>
+    <p style="margin-top:1.5rem"><a class="bouton bouton--secondaire"
+      href="#contact.html">Laisser un avis / nous contacter</a></p>
+  </div>
+</section>
+
+
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Combien coûte le permis de conduire chez Auto Moto École Bizot ?</summary><div><p>Le forfait permis B de 20 heures est affiché à 990 € tout inclus, en boîte manuelle comme en boîte automatique. Le forfait moto A2 de 20 heures est à 890 € tout inclus. Ces montants comprennent l'accès au code en ligne, l'accompagnement du dossier et la présentation aux examens ; les heures supplémentaires éventuelles sont facturées à l'unité.</p></div></details><details><summary>Où se trouve l'auto-école dans le 12e arrondissement ?</summary><div><p>Au 113 avenue du Général Michel Bizot, 75012 Paris, à trois minutes à pied du métro Michel Bizot (ligne 8) et à sept minutes de Porte Dorée. Les bus 46 et 87 desservent l'avenue.</p></div></details><details><summary>Puis-je bénéficier de l'aide de la Région Île-de-France ?</summary><div><p>Oui. L'auto-école est partenaire du dispositif régional : les jeunes Franciliens de 18 à 25 ans peuvent obtenir jusqu'à 1 000 € d'aide, sous conditions de ressources et d'engagement citoyen. Nous montons le dossier avec vous lors de l'inscription.</p></div></details><details><summary>En combien de temps peut-on obtenir son permis ?</summary><div><p>Comptez en moyenne trois à quatre mois entre l'inscription et l'examen pratique, en tenant compte du délai d'obtention du code et de l'attribution d'une place d'examen. Une formule accélérée permet de passer le permis en quelques semaines si votre disponibilité le permet.</p></div></details><details><summary>Proposez-vous la conduite accompagnée ?</summary><div><p>Oui, dès 15 ans, ainsi que la conduite supervisée à partir de 18 ans. Les deux formules incluent la formation initiale de 20 heures, les rendez-vous pédagogiques et le suivi de l'accompagnateur.</p></div></details><details><summary>Faut-il déjà avoir le code pour s'inscrire ?</summary><div><p>Non. Vous pouvez vous inscrire à la formation complète — code et conduite — ou à la conduite seule si vous détenez déjà un code en cours de validité (valable cinq ans et cinq présentations à l'examen pratique).</p></div></details></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <div class="grille grille--texte-media">
+      <div>
+        <span class="surtitre">Nous trouver</span>
+        <h2>113 avenue du Général Michel Bizot, Paris 12<sup>e</sup></h2>
+        <p>Passez à l'agence pour l'évaluation de départ&nbsp;: elle dure vingt minutes et
+        ne vous engage à rien. Pensez à apporter une pièce d'identité si vous souhaitez
+        ouvrir votre dossier dans la foulée.</p>
+        <dl class="pile" style="font-size:1rem"><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Lundi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Mardi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Mercredi</dt><dd style="margin:0;font-weight:700">10h–13h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Jeudi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–16h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Vendredi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Samedi</dt><dd style="margin:0;font-weight:700">10h–13h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;max-width:22rem;border-bottom:1px solid var(--trait);padding:.35rem 0"><dt>Dimanche</dt><dd style="margin:0;font-weight:700">Fermé</dd></div></dl>
+        <div class="boutons" style="margin-top:1.5rem">
+          <a class="bouton bouton--principal" href="#contact.html">Prendre rendez-vous</a>
+          <a class="bouton bouton--secondaire" href="tel:+33145852214">01 45 85 22 14</a>
+        </div>
+      </div>
+      <div class="plan"><span>Emplacement carte — plan Google Maps de l'agence,
+      chargé après consentement aux cookies.</span></div>
+    </div>
+  </div>
+</section>
+
+</section>
+<section class="page" data-page="permis-voiture.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Permis voiture</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Permis B</span>
+    <h1>Permis voiture à Paris 12 — boîte manuelle ou automatique</h1>
+    <p class="heros__accroche">Formation classique, conduite accompagnée dès 15 ans ou conduite supervisée : trois chemins vers le même permis, avec le même suivi et un budget annoncé à l'avance.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Les formules</span>
+      <h2>Choisissez le parcours qui vous ressemble</h2>
+    </div>
+    <div class="grille grille--3"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg></span><h3>Formation classique</h3><p class="carte__prix">990 €<small>forfait 20 h tout inclus</small></p><p>Le parcours le plus courant : code puis conduite, à votre rythme, avec un objectif d'examen fixé ensemble.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Dès 17 ans pour la conduite</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>20 h minimum en boîte manuelle</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>13 h minimum en boîte automatique</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Leçons de 1 h ou 2 h</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.5-8 5.5V22h16v-2.5c0-3-3.6-5.5-8-5.5z"/></svg></span><h3>Conduite accompagnée (AAC)</h3><p class="carte__prix">À partir de 1 090 €<small>forfait AAC, rendez-vous inclus</small></p><p>À partir de 15 ans. Après la formation initiale, vous conduisez avec un proche pendant au moins un an et 3 000 km.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Meilleur taux de réussite à l'examen</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Assurance souvent réduite ensuite</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>2 rendez-vous pédagogiques inclus</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Examen possible dès 17 ans</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span><h3>Formule accélérée</h3><p class="carte__prix">Sur devis<small>selon disponibilité des places</small></p><p>Un permis en quelques semaines quand votre planning le permet : leçons groupées et place d'examen réservée en amont.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Conduite tous les jours ou presque</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Code accéléré possible</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Sous réserve des places d'examen</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Devis établi au rendez-vous</span></li></ul></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Le déroulé</span>
+      <h2>Comment se passe la formation</h2>
+    </div>
+    <div class="grille grille--4"><div class="etape"><span class="etape__numero">1</span><h3>Évaluation de départ</h3><p>Une heure sur simulateur ou en voiture pour situer votre niveau et estimer honnêtement le volume d'heures nécessaire.</p></div><div class="etape"><span class="etape__numero">2</span><h3>Le code</h3><p>Cours en salle et entraînement en ligne illimité jusqu'à l'obtention de l'examen théorique.</p></div><div class="etape"><span class="etape__numero">3</span><h3>La conduite</h3><p>Quatre compétences travaillées dans l'ordre du programme national : maîtriser, appréhender, circuler, pratiquer.</p></div><div class="etape"><span class="etape__numero">4</span><h3>L'examen</h3><p>Bilan de fin de formation, puis présentation à l'examen pratique sur un centre d'examen parisien que vous aurez travaillé en leçon.</p></div></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Bon à savoir</span>
+      <h2>Le détail qui change le budget</h2>
+    </div>
+    
+    <div class="grille grille--2">
+      <div>
+        <p>Un forfait n'est pas un prix final : la moyenne nationale tourne autour de
+        30 heures de conduite. Nous préférons annoncer un forfait de 20 heures au prix juste
+        et un tarif horaire clair, plutôt qu'un forfait gonflé dont vous n'utiliserez
+        peut-être pas la moitié.</p>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Heure supplémentaire : 55 € — sans majoration de dernière minute</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Frais de dossier et présentation à l'examen inclus</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Aucun frais de résiliation caché : le contrat est remis à l'inscription</span></li>
+        </ul>
+        <p><a class="bouton bouton--secondaire" href="#tarifs.html">Voir la grille complète</a></p>
+      </div>
+      <div class="photo" role="img" aria-label="une leçon de conduite dans le 12e arrondissement"><span>Emplacement photo — une leçon de conduite dans le 12e arrondissement</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Combien d'heures de conduite faut-il pour avoir le permis B ?</summary><div><p>La loi impose au minimum 20 heures de conduite en boîte manuelle et 13 heures en boîte automatique. La moyenne nationale se situe plutôt autour de 30 à 35 heures : c'est pourquoi nous annonçons un forfait de départ à 20 heures et un tarif horaire clair pour les heures supplémentaires, plutôt qu'un forfait gonflé.</p></div></details><details><summary>Quelle différence entre conduite accompagnée et conduite supervisée ?</summary><div><p>La conduite accompagnée (AAC) démarre dès 15 ans, après 20 heures de formation, et impose 3 000 km sur au moins un an avant l'examen. La conduite supervisée s'adresse aux plus de 18 ans, sans kilométrage minimum : elle sert à prendre de l'expérience avant l'examen ou après un échec.</p></div></details><details><summary>Le permis boîte automatique permet-il de conduire une boîte manuelle ?</summary><div><p>Non, pas immédiatement. Après trois mois de permis boîte automatique, une formation passerelle de 7 heures, sans examen, permet d'obtenir le permis boîte manuelle.</p></div></details><details><summary>Combien de temps mon code reste-t-il valable ?</summary><div><p>Cinq ans, et pour cinq présentations à l'examen pratique. Au-delà, il faut le repasser.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#financement.html">Aides et financement</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="permis-moto.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Permis moto</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Permis A1, A2 et 125 cm³</span>
+    <h1>Permis moto à Paris 12 — du plateau à la circulation</h1>
+    <p class="heros__accroche">Un moniteur moto dédié, des machines adaptées à votre gabarit et un plateau travaillé jusqu'à ce que les trajectoires deviennent naturelles.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Les formations</span>
+      <h2>Quatre parcours moto</h2>
+    </div>
+    <div class="grille grille--2"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><h3>Permis A2</h3><p class="carte__prix">890 €<small>forfait 20 h tout inclus</small></p><p>La formation de référence dès 18 ans : motos jusqu'à 35 kW, plateau et circulation.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>20 h de formation pratique minimum</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>8 h de plateau, 12 h de circulation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Prêt du casque et des gants au démarrage</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Présentation aux deux examens incluse</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><h3>Permis A1 — dès 16 ans</h3><p class="carte__prix">890 €<small>forfait 20 h tout inclus</small></p><p>Pour rouler en 125 cm³ dès 16 ans, avec le même programme adapté aux petites cylindrées.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Accessible dès 16 ans</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Motos 125 cm³ de l'auto-école</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Plateau et circulation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Code moto (ETM) inclus</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span><h3>Formation 125 cm³ (7 h)</h3><p class="carte__prix">330 €<small>formation complète, sans examen</small></p><p>Vous avez le permis B depuis deux ans : sept heures suffisent pour rouler en 125 cm³ ou en scooter à trois roues.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>2 h de théorie</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>2 h de plateau hors circulation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>3 h en circulation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Attestation remise le jour même</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2 4 5v6.5c0 4.7 3.4 9.1 8 10.5 4.6-1.4 8-5.8 8-10.5V5zm-1 14-4-4 1.4-1.4L11 13.2l4.6-4.6L17 10z"/></svg></span><h3>Passerelle A2 → A</h3><p class="carte__prix">330 €<small>formation passerelle</small></p><p>Après deux ans de permis A2, sept heures de formation donnent accès au permis A sans limitation de puissance.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>2 h de théorie et d'analyse d'accident</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>2 h de maniabilité</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>3 h en circulation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Aucun examen final</span></li></ul></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Le déroulé</span>
+      <h2>Ce que vous travaillez, séance après séance</h2>
+    </div>
+    <div class="grille grille--4"><div class="etape"><span class="etape__numero">1</span><h3>Prise en main</h3><p>Position, embrayage, équilibre à allure lente : les fondamentaux, sur le plateau, hors circulation.</p></div><div class="etape"><span class="etape__numero">2</span><h3>Le plateau</h3><p>Maniabilité lente et rapide, freinage d'urgence, vérifications et questions orales du permis.</p></div><div class="etape"><span class="etape__numero">3</span><h3>La circulation</h3><p>Insertion, trajectoires de sécurité, angles morts et cohabitation avec le trafic parisien.</p></div><div class="etape"><span class="etape__numero">4</span><h3>Les examens</h3><p>Présentation au plateau, puis à la circulation, avec une séance de révision juste avant chaque épreuve.</p></div></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Sécurité</span>
+      <h2>Rouler à Paris, ça s'apprend</h2>
+    </div>
+    
+    <div class="grille grille--texte-media">
+      <div>
+        <p>Le 12<sup>e</sup> arrondissement concentre tout ce qui met un motard débutant en
+        difficulté : couloirs de bus avenue Daumesnil, pavés, giratoires de la place Félix-Éboué
+        et de la Nation, circulation dense sur le boulevard périphérique voisin.</p>
+        <p>Nos parcours de formation passent par ces points précis, aux heures où ils sont
+        réellement chargés. Vous ne découvrez pas la difficulté le jour de l'examen.</p>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Stages de perfectionnement pour motards déjà titulaires du permis</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Reprise de guidon après une longue interruption</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Conseils d'équipement avant achat</span></li>
+        </ul>
+      </div>
+      <div class="photo" role="img" aria-label="une moto d'auto-école sur le plateau d'entraînement"><span>Emplacement photo — une moto d'auto-école sur le plateau d'entraînement</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Quelle est la différence entre le permis A1, A2 et A ?</summary><div><p>Le permis A1 se passe dès 16 ans et donne accès aux motos de 125 cm³ (11 kW). Le permis A2, accessible dès 18 ans, autorise les motos jusqu'à 35 kW. Après deux ans de permis A2, une formation passerelle de 7 heures donne accès au permis A, sans limitation de puissance.</p></div></details><details><summary>Comment se passe l'examen du permis moto ?</summary><div><p>L'examen comporte deux épreuves pratiques : le plateau — vérifications, maniabilité à allure lente puis à allure normale, freinage d'urgence — puis la circulation, environ 40 minutes sur route avec l'inspecteur en liaison radio.</p></div></details><details><summary>Puis-je conduire un 125 cm³ avec mon permis B ?</summary><div><p>Oui, après deux ans de permis B et une formation de 7 heures : 2 heures de théorie, 2 heures de plateau et 3 heures en circulation. Aucun examen à passer à l'issue.</p></div></details><details><summary>Faut-il un équipement personnel pour commencer ?</summary><div><p>L'auto-école prête le casque et les gants homologués pour les premières séances. Pour la suite de la formation, un équipement personnel — blouson, gants, bottes — est demandé, et nous vous conseillons avant l'achat.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Prêt à monter sur la moto&nbsp;?</h2>
+      <p>Passez à l'agence : nous regardons ensemble votre gabarit, votre expérience et le calendrier des places d'examen plateau.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#tarifs.html">Voir les tarifs moto</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="code-de-la-route.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Code de la route</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Code de la route</span>
+    <h1>Préparer le code à Paris 12 — en salle et en ligne</h1>
+    <p class="heros__accroche">Un enseignant en salle pour comprendre, une plateforme en ligne pour s'entraîner autant que nécessaire, et une inscription à l'examen prise en charge dès que vos scores sont au niveau.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">La méthode</span>
+      <h2>Deux façons d'apprendre, une seule progression</h2>
+    </div>
+    
+    <div class="grille grille--3"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8 1.8V8h3.2zM8 11h8v2H8zm0 4h8v2H8z"/></svg></span><h3>Cours en salle</h3><p>Des séances animées par un enseignant : on corrige, on explique, et surtout on comprend pourquoi la bonne réponse est la bonne.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Plusieurs créneaux par semaine</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Séries commentées en direct</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Questions posées à voix haute</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-13h-2v6l5 3 1-1.7-4-2.3z"/></svg></span><h3>Entraînement en ligne</h3><p>Un accès personnel, valable pendant toute la formation, pour réviser depuis le téléphone ou l'ordinateur.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Séries illimitées</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Examens blancs chronométrés</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Suivi des scores par le moniteur</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span><h3>Code accéléré</h3><p>Une formation intensive sur quelques jours pour les candidats pressés ou déjà à l'aise.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Programme condensé</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Place d'examen réservée en amont</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Bilan quotidien avec l'enseignant</span></li></ul></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">L'examen</span>
+      <h2>Ce qui vous attend le jour J</h2>
+    </div>
+    
+    <div class="grille grille--2">
+      <div>
+        <p>L'examen théorique général se déroule sur tablette, dans un centre agréé, en présence
+        d'un surveillant. Quarante questions, une réponse par question, huit secondes environ
+        de réflexion. Il faut 35 bonnes réponses pour être reçu.</p>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Résultat transmis sous 48 heures par courriel</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Code valable 5 ans et 5 présentations à l'examen pratique</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>En cas d'échec, nouvelle place réservée sans frais de dossier</span></li>
+        </ul>
+        <p><a class="bouton bouton--principal" href="#contact.html">S'inscrire au code</a></p>
+      </div>
+      <div class="photo photo--large" role="img" aria-label="la salle de code de l'auto-école"><span>Emplacement photo — la salle de code de l'auto-école</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Comment s'inscrire à l'examen du code de la route ?</summary><div><p>L'auto-école s'occupe de tout : création du dossier ANTS, obtention du numéro NEPH puis réservation d'une place d'examen théorique dans un centre agréé proche du 12e arrondissement. Vous recevez la convocation par courriel.</p></div></details><details><summary>Combien de fautes sont autorisées à l'examen du code ?</summary><div><p>L'examen comporte 40 questions ; il faut au moins 35 bonnes réponses, soit 5 fautes maximum, pour être reçu.</p></div></details><details><summary>Combien coûte l'examen du code ?</summary><div><p>La redevance d'examen théorique est de 30 €, versée à l'organisme agréé. Dans nos forfaits permis, la préparation et l'accompagnement à l'inscription sont inclus.</p></div></details><details><summary>Peut-on réviser le code depuis chez soi ?</summary><div><p>Oui. Chaque élève reçoit un accès personnel à la plateforme d'entraînement en ligne : séries illimitées, examens blancs et suivi des scores, consultables par le moniteur qui vous conseille selon vos erreurs.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#permis-voiture.html">Et après : la conduite</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="tarifs.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Tarifs</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Tarifs</span>
+    <h1>Tarifs du permis à Paris 12 — affichés, sans surprise</h1>
+    <p class="heros__accroche">Un forfait de départ au prix juste, un tarif horaire clair pour les heures supplémentaires, et aucun frais caché ajouté en cours de route.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    
+  <div class="encadre" style="margin-top:0">
+    <p><strong>Maquette&nbsp;:</strong> les montants ci-dessous reprennent les informations
+    publiques disponibles en ligne et des ordres de grandeur du marché parisien. Ils doivent
+    être remplacés par la grille tarifaire officielle de l'auto-école avant mise en ligne —
+    l'affichage des prix est une obligation légale et une des premières choses que les
+    candidats comparent.</p>
+  </div>
+    <div class="grille grille--2" style="align-items:start">
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Permis voiture (B)</caption>
+    <thead><tr><th scope="col">Prestation</th><th scope="col">Tarif</th></tr></thead>
+    <tbody><tr><th scope="row">Forfait 20 h — boîte manuelle</th><td>990 €</td></tr><tr><th scope="row">Forfait 20 h — boîte automatique</th><td>990 €</td></tr><tr><th scope="row">Forfait conduite accompagnée (AAC)</th><td>1 090 €</td></tr><tr><th scope="row">Heure de conduite supplémentaire</th><td>55 €</td></tr><tr><th scope="row">Passerelle boîte auto → boîte manuelle (7 h)</th><td>390 €</td></tr><tr><th scope="row">Évaluation de départ</th><td>Offerte</td></tr></tbody>
+  </table>
+</div>
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Permis moto (A1, A2)</caption>
+    <thead><tr><th scope="col">Prestation</th><th scope="col">Tarif</th></tr></thead>
+    <tbody><tr><th scope="row">Forfait A2 — 20 h</th><td>890 €</td></tr><tr><th scope="row">Forfait A1 — 20 h</th><td>890 €</td></tr><tr><th scope="row">Formation 125 cm³ (7 h)</th><td>330 €</td></tr><tr><th scope="row">Passerelle A2 → A (7 h)</th><td>330 €</td></tr><tr><th scope="row">Heure de conduite moto supplémentaire</th><td>65 €</td></tr><tr><th scope="row">Stage de perfectionnement</th><td>Sur devis</td></tr></tbody>
+  </table>
+</div>
+    </div>
+    <div class="grille grille--2" style="align-items:start;margin-top:1.5rem">
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Code de la route</caption>
+    <thead><tr><th scope="col">Prestation</th><th scope="col">Tarif</th></tr></thead>
+    <tbody><tr><th scope="row">Code inclus dans un forfait permis</th><td>Inclus</td></tr><tr><th scope="row">Forfait code seul — salle et en ligne, 12 mois</th><td>390 €</td></tr><tr><th scope="row">Redevance d'examen théorique (organisme agréé)</th><td>30 €</td></tr><tr><th scope="row">Code accéléré</th><td>Sur devis</td></tr></tbody>
+  </table>
+</div>
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Frais administratifs</caption>
+    <thead><tr><th scope="col">Prestation</th><th scope="col">Tarif</th></tr></thead>
+    <tbody><tr><th scope="row">Frais de dossier et gestion ANTS</th><td>Inclus</td></tr><tr><th scope="row">Présentation à l'examen pratique</th><td>1re incluse</td></tr><tr><th scope="row">Nouvelle présentation à l'examen pratique</th><td>70 €</td></tr><tr><th scope="row">Location du véhicule le jour de l'examen</th><td>Incluse</td></tr></tbody>
+  </table>
+</div>
+    </div>
+    <p class="mention" style="margin-top:1.5rem">Tarifs TTC. La redevance d'examen du code
+    (30 €) est versée à l'organisme agréé. Offre de lancement mentionnée en agence&nbsp;:
+    −50 € sur les premiers forfaits.</p>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Financement</span>
+      <h2>Ce que vous ne payez peut-être pas vous-même</h2>
+    </div>
+    
+    <div class="grille grille--texte-media">
+      <div>
+        <p>Selon votre âge et votre situation, une partie du permis peut être prise en charge.
+        Nous vérifions votre éligibilité au rendez-vous d'inscription et montons le dossier
+        avec vous.</p>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Aide de la Région Île-de-France : jusqu'à 1 000 € pour les 18-25 ans</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Permis à 1 € par jour : prêt à taux zéro pour les 15-25 ans</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Compte personnel de formation (CPF), sous conditions</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Aide de 500 € pour les apprentis majeurs</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Paiement échelonné sans frais</span></li>
+        </ul>
+        <p><a class="bouton bouton--principal" href="#financement.html">Voir les aides en détail</a></p>
+      </div>
+      <div class="photo" role="img" aria-label="un candidat signant son contrat de formation à l'agence"><span>Emplacement photo — un candidat signant son contrat de formation à l'agence</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Le prix affiché est-il vraiment tout compris ?</summary><div><p>Le forfait comprend l'évaluation de départ, les heures de conduite annoncées, l'accès au code en ligne, les frais de dossier et la présentation à l'examen. Restent à votre charge les éventuelles heures supplémentaires, la redevance d'examen du code de 30 € et une nouvelle présentation en cas d'échec à la conduite.</p></div></details><details><summary>Peut-on payer en plusieurs fois ?</summary><div><p>Oui. Le règlement peut être échelonné sans frais sur la durée de la formation ; les modalités sont écrites dans le contrat remis à l'inscription.</p></div></details><details><summary>Que se passe-t-il si j'ai besoin de plus de 20 heures ?</summary><div><p>Les heures supplémentaires sont facturées à l'unité, au tarif affiché, sans majoration. Votre moniteur vous prévient au moins deux leçons à l'avance quand il estime qu'il faudra prolonger, afin que vous puissiez anticiper le budget.</p></div></details><details><summary>Le contrat prévoit-il des frais si j'arrête en cours de route ?</summary><div><p>En cas d'arrêt, seules les prestations réalisées sont dues, et le solde vous est restitué. Les conditions figurent en toutes lettres dans le contrat de formation.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#financement.html">Aides et financement</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="financement.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Financement</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Aides et financement</span>
+    <h1>Financer son permis à Paris : les aides existantes</h1>
+    <p class="heros__accroche">Aide régionale, prêt à taux zéro, CPF, dispositifs pour les apprentis et les demandeurs d'emploi : nous vérifions votre éligibilité au premier rendez-vous et montons le dossier avec vous.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Les dispositifs</span>
+      <h2>Cinq façons de réduire la facture</h2>
+    </div>
+    <div class="grille grille--3"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.6 6.2a5.4 5.4 0 0 0-5.2 3.4H15v1.8h-5.1a6 6 0 0 0 0 1.2H15v1.8h-4.6a5.4 5.4 0 0 0 5.2 3.4c.9 0 1.7-.2 2.4-.6v2.1c-.8.3-1.6.5-2.5.5a7.4 7.4 0 0 1-7.2-5.4H6v-1.8h2a7.7 7.7 0 0 1 0-1.2H6V9.6h2.3A7.4 7.4 0 0 1 15.5 4c.9 0 1.7.2 2.5.5v2.1c-.7-.3-1.5-.4-2.4-.4z"/></svg></span><h3>Aide de la Région Île-de-France</h3><p>Jusqu'à 1 000 € pour les Franciliens de 18 à 25 ans, sous conditions de ressources et en contrepartie d'un engagement citoyen.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Déduite du coût de la formation</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Dossier déposé en ligne</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Attestations fournies par l'auto-école</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 2h2v2h6V2h2v2h2a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h2zm12 7H5v10h14zM7 11h4v4H7z"/></svg></span><h3>Permis à 1 € par jour</h3><p>Un prêt à taux zéro de 600 à 1 200 € pour les 15-25 ans, remboursé 30 € par mois. L'État prend en charge les intérêts.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Auto-école conventionnée</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Cumulable avec l'aide régionale</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Souscription auprès d'une banque partenaire</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.5-8 5.5V22h16v-2.5c0-3-3.6-5.5-8-5.5z"/></svg></span><h3>Compte personnel de formation</h3><p>Le permis B est mobilisable via le CPF lorsqu'il sert un projet professionnel, sur moncompteformation.gouv.fr.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Sans avance de frais</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Complément possible par vos soins</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Devis remis pour la démarche</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2 4 5v6.5c0 4.7 3.4 9.1 8 10.5 4.6-1.4 8-5.8 8-10.5V5zm-1 14-4-4 1.4-1.4L11 13.2l4.6-4.6L17 10z"/></svg></span><h3>Aide aux apprentis</h3><p>500 € pour les apprentis d'au moins 18 ans préparant le permis B, sans condition de ressources.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Cumulable avec les autres aides</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Demande auprès du CFA</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Facture fournie par l'auto-école</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-13h-2v6l5 3 1-1.7-4-2.3z"/></svg></span><h3>Demandeurs d'emploi</h3><p>France Travail peut participer au financement lorsque le permis lève un frein à l'embauche. Le montant dépend de votre situation.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Devis conforme fourni</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Étude avec votre conseiller</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Prise en charge partielle ou totale</span></li></ul></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span><h3>Paiement échelonné</h3><p>Si aucune aide ne s'applique, le règlement peut être étalé sans frais sur la durée de la formation.</p><ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Aucun frais supplémentaire</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Échéancier écrit au contrat</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Adaptable en cours de formation</span></li></ul></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">La marche à suivre</span>
+      <h2>Comment on s'y prend, concrètement</h2>
+    </div>
+    <div class="grille grille--4"><div class="etape"><span class="etape__numero">1</span><h3>On fait le point</h3><p>Âge, situation, projet professionnel, ressources : vingt minutes suffisent pour savoir à quoi vous avez droit.</p></div><div class="etape"><span class="etape__numero">2</span><h3>On monte le dossier</h3><p>Devis conforme, attestation d'inscription, pièces de l'auto-école : tout ce que l'organisme financeur réclame, préparé pour vous.</p></div><div class="etape"><span class="etape__numero">3</span><h3>Vous déposez la demande</h3><p>En ligne dans la plupart des cas. Nous vous accompagnons pendant la saisie si vous le souhaitez.</p></div><div class="etape"><span class="etape__numero">4</span><h3>La formation démarre</h3><p>Vous commencez sans attendre la réponse dans la majorité des dispositifs, l'aide venant en déduction du solde.</p></div></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Qui peut bénéficier de l'aide au permis de la Région Île-de-France ?</summary><div><p>Le dispositif s'adresse aux Franciliens de 18 à 25 ans, sous conditions de ressources et en contrepartie d'un engagement citoyen ou d'une action bénévole. L'aide peut atteindre 1 000 € et se déduit directement du coût de la formation. Le dossier se dépose en ligne auprès de la Région ; nous fournissons les pièces émanant de l'auto-école.</p></div></details><details><summary>Comment fonctionne le permis à 1 € par jour ?</summary><div><p>C'est un prêt à taux zéro, de 600 à 1 200 € selon la formule, accordé par une banque partenaire aux 15-25 ans. Vous remboursez 30 € par mois, l'État prend en charge les intérêts. L'auto-école doit être conventionnée : la nôtre remet l'attestation nécessaire au montage du dossier.</p></div></details><details><summary>Le permis est-il finançable avec le CPF ?</summary><div><p>Le permis B et certains permis professionnels sont éligibles au compte personnel de formation lorsque l'obtention du permis contribue à un projet professionnel et que vous ne faites pas l'objet d'une suspension. La démarche se fait sur moncompteformation.gouv.fr.</p></div></details><details><summary>Peut-on cumuler plusieurs aides ?</summary><div><p>Oui dans la plupart des cas, à condition que le total des aides ne dépasse pas le coût réel de la formation. Nous faisons le calcul avec vous avant l'inscription.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Vérifions ensemble vos droits</h2>
+      <p>Un appel de dix minutes suffit souvent pour savoir si votre permis peut être financé en partie. C'est gratuit et sans engagement.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#tarifs.html">Voir les tarifs</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="auto-ecole-paris-12.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Auto-école Paris 12</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Auto-école Paris 12</span>
+    <h1>Auto-école à Paris 12 : permis voiture, moto et code</h1>
+    <p class="heros__accroche">Nous formons les habitants du 12<sup>e</sup> arrondissement et des communes voisines, à trois minutes du métro Michel Bizot. Voici tout ce qu'il faut savoir avant de choisir votre auto-école dans le quartier.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Zone desservie</span>
+      <h2>Où sont nos élèves</h2>
+    </div>
+    
+    <div class="grille grille--texte-media">
+      <div>
+        <p>La plupart de nos candidats habitent ou travaillent à moins de vingt minutes de
+        l'agence. Les leçons partent de l'avenue du Général Michel Bizot et rejoignent
+        rapidement les axes que vous emprunterez tous les jours.</p>
+        <div class="grille grille--2" style="gap:.5rem 2rem">
+          <ul class="liste-cochee">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Bel-Air et Picpus</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Daumesnil et Michel Bizot</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Bercy et Cour Saint-Émilion</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Nation et Reuilly-Diderot</span></li>
+          </ul>
+          <ul class="liste-cochee">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Porte Dorée et bois de Vincennes</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Saint-Mandé et Vincennes</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Charenton-le-Pont</span></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Paris 11e et 20e limitrophes</span></li>
+          </ul>
+        </div>
+        <p><a class="bouton bouton--secondaire" href="#contact.html">Venir à l'agence</a></p>
+      </div>
+      <div class="plan"><span>Emplacement carte — zone d'intervention autour du
+      113 avenue du Général Michel Bizot.</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Conduire à Paris 12</span>
+      <h2>Les points du quartier que nous travaillons en leçon</h2>
+    </div>
+    
+    <div class="grille grille--3">
+      <article class="carte"><h3>Place Félix-Éboué</h3>
+        <p>Un giratoire à plusieurs voies, très fréquenté, où l'on apprend à choisir sa file
+        et à sortir sans hésiter.</p></article>
+      <article class="carte"><h3>Avenue Daumesnil</h3>
+        <p>Couloirs de bus, cyclistes et livraisons : l'exercice type du contrôle des angles
+        morts et de la distance latérale.</p></article>
+      <article class="carte"><h3>Place de la Nation</h3>
+        <p>Le passage obligé pour comprendre les priorités et l'insertion dans un flux dense.</p></article>
+      <article class="carte"><h3>Boulevards des Maréchaux</h3>
+        <p>Tramway T3a, feux rapprochés, changements de file : l'anticipation y devient un
+        réflexe.</p></article>
+      <article class="carte"><h3>Bois de Vincennes</h3>
+        <p>Un terrain plus calme, idéal pour les premières heures et pour les manœuvres.</p></article>
+      <article class="carte"><h3>Périphérique, porte Dorée</h3>
+        <p>Insertion et vitesse, travaillées en fin de formation quand les bases sont acquises.</p></article>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Nos formations</span>
+      <h2>Ce que vous pouvez préparer chez nous</h2>
+    </div>
+    
+    <div class="grille grille--3"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg></span><h3>Permis B</h3><p>Boîte manuelle ou automatique, conduite accompagnée ou supervisée, formule accélérée.</p><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#permis-voiture.html">Permis voiture</a></p></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><h3>Permis moto</h3><p>A1 dès 16 ans, A2 dès 18 ans, formation 125 cm³ et passerelle A2 vers A.</p><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#permis-moto.html">Permis moto</a></p></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8 1.8V8h3.2zM8 11h8v2H8zm0 4h8v2H8z"/></svg></span><h3>Code de la route</h3><p>Cours en salle et entraînement en ligne illimité, code accéléré possible.</p><p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#code-de-la-route.html">Code de la route</a></p></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Auto-école à Paris 12 : les questions qu'on nous pose</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Quelle auto-école choisir dans le 12e arrondissement de Paris ?</summary><div><p>Comparez quatre points concrets : le prix affiché du forfait et celui de l'heure supplémentaire, le délai moyen pour obtenir une place d'examen, la possibilité de garder le même moniteur, et les avis récents. Auto Moto École Bizot est une auto-école familiale du 12e, située au 113 avenue du Général Michel Bizot, qui forme au permis B, au permis moto et au code.</p></div></details><details><summary>Où passe-t-on l'examen du permis quand on habite Paris 12 ?</summary><div><p>Les candidats parisiens sont convoqués dans l'un des centres d'examen d'Île-de-France, souvent en proche banlieue est. Les leçons de fin de formation se déroulent sur les itinéraires du centre où vous serez présenté.</p></div></details><details><summary>Quels quartiers l'auto-école dessert-elle ?</summary><div><p>Le quartier Bel-Air, Picpus, Daumesnil, Bercy, la Nation et le bois de Vincennes, ainsi que les communes limitrophes : Saint-Mandé, Charenton-le-Pont, Vincennes et Ivry-sur-Seine pour les élèves qui travaillent dans le 12e.</p></div></details><details><summary>Est-ce plus difficile d'apprendre à conduire à Paris ?</summary><div><p>La circulation parisienne est dense, mais elle prépare à tout : couloirs de bus, deux-roues, giratoires chargés, livraisons en double file. Un candidat formé à Paris est à l'aise partout ensuite. La contrepartie, ce sont des délais d'examen plus longs — d'où l'importance d'un dossier déposé tôt.</p></div></details></div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Votre auto-école est à trois minutes du métro</h2>
+      <p>113 avenue du Général Michel Bizot, 75012 Paris. Métro Michel Bizot ligne 8, bus 46 et 87. Ouvert du lundi au samedi.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#tarifs.html">Voir les tarifs</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="a-propos.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">L'auto-école</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">L'auto-école</span>
+    <h1>Une auto-école familiale du 12<sup>e</sup> arrondissement</h1>
+    <p class="heros__accroche">Une petite structure indépendante, ouverte en 2024 avenue du Général Michel Bizot, où l'on connaît les élèves par leur prénom et où le moniteur qui vous évalue est celui qui vous présente à l'examen.</p>
+      <div class="boutons" style="margin-top:1.75rem">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+      </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Notre façon de faire</span>
+      <h2>Trois engagements simples</h2>
+    </div>
+    
+    <div class="grille grille--3"><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.5-8 5.5V22h16v-2.5c0-3-3.6-5.5-8-5.5z"/></svg></span><h3>Le même moniteur</h3><p>Changer d'enseignant à chaque leçon fait perdre des heures. Chez nous, votre moniteur vous suit du premier cours à l'examen.</p></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.6 6.2a5.4 5.4 0 0 0-5.2 3.4H15v1.8h-5.1a6 6 0 0 0 0 1.2H15v1.8h-4.6a5.4 5.4 0 0 0 5.2 3.4c.9 0 1.7-.2 2.4-.6v2.1c-.8.3-1.6.5-2.5.5a7.4 7.4 0 0 1-7.2-5.4H6v-1.8h2a7.7 7.7 0 0 1 0-1.2H6V9.6h2.3A7.4 7.4 0 0 1 15.5 4c.9 0 1.7.2 2.5.5v2.1c-.7-.3-1.5-.4-2.4-.4z"/></svg></span><h3>Un budget annoncé</h3><p>Le nombre d'heures conseillé et le coût des heures supplémentaires vous sont donnés avant de signer, pas découverts en cours de route.</p></article><article class="carte"><span class="carte__icone"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm1-13h-2v6l5 3 1-1.7-4-2.3z"/></svg></span><h3>Des créneaux tenus</h3><p>Les plannings sont gérés à l'agence. Une leçon annulée par l'auto-école est reprogrammée en priorité.</p></article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">L'équipe</span>
+      <h2>Qui vous accompagne</h2>
+    </div>
+    
+    <div class="grille grille--3">
+      <article class="carte"><div class="photo photo--large" role="img" aria-label="portrait"><span>Emplacement photo — portrait</span></div><h3>Direction</h3>
+        <p>Accueil, montage des dossiers, suivi des places d'examen et relation avec la
+        préfecture. <em>Nom et parcours à compléter par l'auto-école.</em></p></article>
+      <article class="carte"><div class="photo photo--large" role="img" aria-label="portrait"><span>Emplacement photo — portrait</span></div><h3>Enseignant·e voiture</h3>
+        <p>Titulaire du BEPECASER ou du titre professionnel ECSR.
+        <em>Nom, ancienneté et spécialité à compléter.</em></p></article>
+      <article class="carte"><div class="photo photo--large" role="img" aria-label="portrait"><span>Emplacement photo — portrait</span></div><h3>Enseignant·e moto</h3>
+        <p>Mention deux-roues, plateau et circulation.
+        <em>Nom, ancienneté et spécialité à compléter.</em></p></article>
+    </div>
+    <p class="mention" style="margin-top:1.5rem">Les portraits de l'équipe sont un levier de
+    confiance sous-estimé&nbsp;: une page « qui sommes-nous » nourrie de vrais prénoms, de
+    photos et d'ancienneté est aussi ce que les moteurs de réponse citent pour justifier une
+    recommandation.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Informations légales</span>
+      <h2>L'essentiel à afficher</h2>
+    </div>
+    
+    <div class="grille grille--2">
+      <ul class="liste-cochee">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Agrément préfectoral n° E XX XXX XXXX 0 — à compléter</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>SAS immatriculée à Paris, SIREN 933 196 297</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Établissement ouvert en 2024</span></li>
+      </ul>
+      <ul class="liste-cochee">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Contrat de formation remis à l'inscription</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Tarifs affichés en agence et sur ce site</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Médiateur de la consommation — à préciser</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#auto-ecole-paris-12.html">L'auto-école dans le quartier</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="contact.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Contact</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Contact et inscription</span>
+    <h1>Prendre rendez-vous à l'auto-école</h1>
+    <p class="heros__accroche">Appelez-nous, passez à l'agence ou laissez votre numéro : nous vous rappelons sous 24 h ouvrées pour faire le point sur votre situation.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="grille grille--2" style="align-items:start;gap:3rem">
+      <div><form class="pile" data-demo novalidate>
+  <h2>Demander un rappel gratuit</h2>
+  <p>Renseignez vos coordonnées et la formation qui vous intéresse. Nous vous rappelons sous 24 h ouvrées, sans engagement.</p>
+  <div class="champs-2">
+    <div class="champ">
+      <label for="contact-prenom">Prénom</label>
+      <input id="contact-prenom" name="prenom" type="text" autocomplete="given-name" required>
+    </div>
+    <div class="champ">
+      <label for="contact-tel">Téléphone</label>
+      <input id="contact-tel" name="telephone" type="tel" autocomplete="tel" required>
+    </div>
+        <div class="champ">
+          <label for="contact-courriel">Courriel</label>
+          <input id="contact-courriel" name="courriel" type="email" autocomplete="email">
+        </div>
+  </div>
+  <div class="champ">
+    <label for="contact-formation">Formation souhaitée</label>
+    <select id="contact-formation" name="formation"><option>Permis B — boîte manuelle</option><option>Permis B — boîte automatique</option><option>Conduite accompagnée (AAC)</option><option>Permis moto A1 / A2</option><option>Formation 125 cm³ (7 h)</option><option>Code de la route seul</option><option>Je ne sais pas encore</option></select>
+  </div>
+      <div class="champ">
+        <label for="contact-message">Votre message (facultatif)</label>
+        <textarea id="contact-message" name="message" rows="4"
+          placeholder="Vos disponibilités, vos questions…"></textarea>
+      </div>
+  <p class="champ"><button class="bouton bouton--principal bouton--large" type="submit">
+    Être rappelé gratuitement</button></p>
+  <p class="mention">Réponse sous 24 h ouvrées. Vos données servent uniquement à vous
+  recontacter et ne sont jamais transmises à un tiers.</p>
+  <div class="formulaire__retour" data-retour role="status" hidden></div>
+</form></div>
+      <div class="pile">
+        <h2>Coordonnées</h2>
+        <p><strong>Auto Moto École Bizot</strong><br>113 avenue du Général Michel Bizot<br>75012 Paris</p>
+        <p class="pile">
+          <a class="bouton bouton--principal" href="tel:+33145852214">01 45 85 22 14</a>
+        </p>
+        <p><a href="mailto:contact@automotoecolebizot.com">contact@automotoecolebizot.com</a></p>
+        <h3>Horaires d'ouverture</h3>
+        <dl style="font-size:1rem;max-width:24rem"><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Lundi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Mardi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Mercredi</dt><dd style="margin:0;font-weight:700">10h–13h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Jeudi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–16h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Vendredi</dt><dd style="margin:0;font-weight:700">10h–13h · 14h–18h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Samedi</dt><dd style="margin:0;font-weight:700">10h–13h</dd></div><div style="display:flex;justify-content:space-between;gap:2rem;border-bottom:1px solid var(--trait);padding:.45rem 0"><dt>Dimanche</dt><dd style="margin:0;font-weight:700">Fermé</dd></div></dl>
+        <h3>Venir à l'agence</h3>
+        <ul class="liste-cochee">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Métro Michel Bizot (ligne 8) — 3 minutes à pied</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Métro Porte Dorée (ligne 8) — 7 minutes à pied</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Bus 46 et 87, arrêt Général Michel Bizot</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Stationnement payant dans l'avenue, gratuit le dimanche</span></li>
+        </ul>
+        <div class="plan"><span>Emplacement carte — plan Google Maps interactif,
+        chargé après consentement aux cookies.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Inscription</span>
+      <h2>Ce qu'il faut apporter pour ouvrir un dossier</h2>
+    </div>
+    
+    <div class="grille grille--2">
+      <ul class="liste-cochee">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Une pièce d'identité en cours de validité</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Un justificatif de domicile de moins de six mois</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Une photo d'identité numérique (code ephoto)</span></li>
+      </ul>
+      <ul class="liste-cochee">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>L'attestation de recensement ou la JDC pour les moins de 25 ans</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>L'ASSR 2 ou l'ASR pour les candidats nés après 1987</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Votre numéro NEPH si vous avez déjà été inscrit ailleurs</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="blog.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li aria-current="page">Conseils</li></ol></nav></div>
+
+<section class="heros sur-fond-sombre" style="padding-block:3.5rem 3rem">
+  <div class="conteneur">
+    <span class="surtitre">Conseils</span>
+    <h1>Comprendre le permis avant de s'inscrire</h1>
+    <p class="heros__accroche">Prix, délais, examens, aides : les articles qui répondent aux questions que se posent nos candidats — et que les moteurs de recherche nous posent aussi.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Nos articles</span>
+      <h2>À lire en ce moment</h2>
+    </div>
+    <div class="grille grille--2"><article class="carte article-carte">
+  <p class="article-meta">26 août 2026 · 6 min de lecture</p>
+  <h3><a href="#blog/prix-permis-de-conduire-paris.html">Prix du permis de conduire à Paris en 2026 : le budget réel</a></h3>
+  <p>Un forfait à 990 € ne veut pas dire un permis à 990 €. Voici les postes qui composent réellement la facture, ceux qui varient d'une auto-école à l'autre, et les aides qui font baisser le total.</p>
+  <p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#blog/prix-permis-de-conduire-paris.html">Lire l'article</a></p>
+</article><article class="carte article-carte">
+  <p class="article-meta">2 septembre 2026 · 7 min de lecture</p>
+  <h3><a href="#blog/permis-a2-moto-paris.html">Permis A2 : déroulé, examens et budget de la formation moto</a></h3>
+  <p>Le permis A2 ouvre l'accès aux motos jusqu'à 35 kW dès 18 ans. Entre le plateau, la circulation et le code moto, voici comment se déroule réellement la formation, et ce qu'elle coûte à Paris.</p>
+  <p class="carte__pied"><a class="bouton bouton--secondaire bouton--large" href="#blog/permis-a2-moto-paris.html">Lire l'article</a></p>
+</article></div>
+  </div>
+</section>
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Calendrier éditorial</span>
+      <h2>Ce qui arrive ensuite</h2>
+    </div>
+    
+    <div class="grille grille--2">
+      <div>
+        <p>Deux articles par mois, choisis à partir des questions réellement tapées dans
+        Google par les habitants du 12<sup>e</sup> arrondissement. C'est ce rythme qui fait
+        remonter le site sur les recherches longues — et qui donne aux moteurs de réponse
+        de quoi vous citer.</p>
+        <ul class="liste-cochee"><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Conduite accompagnée : ce que ça change vraiment sur le taux de réussite</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Passer son permis en boîte automatique à Paris : pour qui, à quel prix</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Délais d'examen en Île-de-France : comment ne pas perdre trois mois</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.6 16.6 5 12l1.4-1.4 3.2 3.2 8-8L19 7.2z"/></svg><span>Rouler en scooter 125 avec le permis B : la formation de 7 heures</span></li></ul>
+      </div>
+      <div class="photo photo--large" role="img" aria-label="un moniteur et une élève devant l'agence"><span>Emplacement photo — un moniteur et une élève devant l'agence</span></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#tarifs.html">Voir les tarifs</a>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+<section class="page" data-page="blog/prix-permis-de-conduire-paris.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li><a href="#blog.html">Conseils</a></li><li aria-current="page">Prix du permis de conduire à Paris en 2026 : le budget réel</li></ol></nav></div>
+
+<article class="section" style="padding-top:2.5rem">
+  <div class="conteneur">
+    <div class="article">
+      <p class="article-meta">Conseils · 26 août 2026 · 6 min de lecture</p>
+      <h1>Prix du permis de conduire à Paris en 2026 : le budget réel</h1>
+      <p class="article__chapeau">Un forfait à 990 € ne veut pas dire un permis à 990 €. Voici les postes qui composent réellement la facture, ceux qui varient d'une auto-école à l'autre, et les aides qui font baisser le total.</p>
+
+      <h2>La réponse courte</h2>
+      <p>À Paris, un permis B revient en moyenne entre <strong>1 200 et 1 800 €</strong> :
+      un forfait de 20 heures autour de 990 €, auquel s'ajoutent une dizaine d'heures
+      supplémentaires à 50-60 € et la redevance d'examen du code de 30 €. Les aides publiques
+      peuvent en retirer jusqu'à 1 000 €.</p>
+
+      <h2>Poste par poste</h2>
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Budget type d'un permis B à Paris</caption>
+    <thead><tr><th scope="col">Poste</th><th scope="col">Montant courant</th></tr></thead>
+    <tbody><tr><th scope="row">Forfait de base — 20 h de conduite, code inclus</th><td>950 à 1 200 €</td></tr><tr><th scope="row">Heures supplémentaires (10 h en moyenne)</th><td>500 à 600 €</td></tr><tr><th scope="row">Redevance d'examen du code</th><td>30 €</td></tr><tr><th scope="row">Frais de dossier et présentation à l'examen</th><td>0 à 150 €</td></tr><tr><th scope="row">Nouvelle présentation après un échec</th><td>70 à 120 €</td></tr><tr><th scope="row">Total constaté</th><td>1 200 à 1 800 €</td></tr></tbody>
+  </table>
+</div>
+      <p>Le forfait initial est le prix d'appel, pas le prix final. Deux auto-écoles affichant
+      le même forfait peuvent aboutir à des factures très différentes selon le tarif de l'heure
+      supplémentaire et les frais annexes.</p>
+
+      <h2>Les trois questions à poser avant de signer</h2>
+      <ol>
+        <li><strong>Combien coûte l'heure supplémentaire&nbsp;?</strong> C'est le poste qui fait
+        varier la facture finale, puisque la moyenne nationale dépasse 30 heures.</li>
+        <li><strong>Que se passe-t-il en cas d'échec&nbsp;?</strong> Une nouvelle présentation
+        est-elle facturée&nbsp;? À quel prix&nbsp;? Sous quel délai&nbsp;?</li>
+        <li><strong>Quels frais restent à ma charge&nbsp;?</strong> Frais de dossier,
+        accompagnement à l'examen, location du véhicule le jour J : tout doit figurer au
+        contrat.</li>
+      </ol>
+
+      <div class="encadre">
+        <p><strong>À retenir :</strong> depuis 2020, le contrat de formation doit détailler le
+        contenu, la durée et le prix de chaque prestation. Une auto-école qui refuse de le
+        remettre avant paiement est en tort.</p>
+      </div>
+
+      <h2>Les aides qui font baisser la note</h2>
+      <ul>
+        <li><strong>Région Île-de-France</strong> : jusqu'à 1 000 € pour les 18-25 ans, sous
+        conditions de ressources et en contrepartie d'un engagement citoyen.</li>
+        <li><strong>Permis à 1 € par jour</strong> : un prêt à taux zéro de 600 à 1 200 € pour
+        les 15-25 ans, remboursé 30 € par mois.</li>
+        <li><strong>Compte personnel de formation</strong> : mobilisable quand le permis sert
+        un projet professionnel.</li>
+        <li><strong>Apprentis</strong> : une aide forfaitaire de 500 € dès 18 ans, sans
+        condition de ressources.</li>
+      </ul>
+      <p>Ces dispositifs se cumulent dans la limite du coût réel de la formation.
+      <a href="#financement.html">Le détail des aides et la marche à suivre</a> sont
+      expliqués sur notre page dédiée.</p>
+
+      <h2>Faire baisser le coût sans rogner sur la formation</h2>
+      <ul>
+        <li><strong>La conduite accompagnée</strong> : plus chère au départ, elle réduit le
+        nombre d'heures nécessaires et améliore nettement le taux de réussite.</li>
+        <li><strong>La boîte automatique</strong> : 13 heures minimum au lieu de 20, avec une
+        passerelle de 7 heures si vous voulez la boîte manuelle plus tard.</li>
+        <li><strong>Réviser le code sérieusement</strong> : chaque échec à l'examen théorique
+        coûte 30 € et repousse la conduite de plusieurs semaines.</li>
+        <li><strong>Enchaîner les leçons</strong> : deux leçons par semaine valent mieux qu'une
+        toutes les trois semaines — on ne réapprend pas ce qui est déjà acquis.</li>
+      </ul>
+
+      <div class="encadre">
+        <p><strong>Chez Auto Moto École Bizot</strong>, le forfait 20 heures est affiché à
+        990 € tout inclus et l'heure supplémentaire à 55 €, sans majoration.
+        <a href="#tarifs.html">Voir la grille complète</a> ou
+        <a href="#contact.html">demander un rappel gratuit</a>.</p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Le prix du permis : questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Combien coûte le permis de conduire à Paris en 2026 ?</summary><div><p>Comptez entre 1 200 et 1 800 € pour un permis B à Paris, en tenant compte d'un forfait de 20 heures autour de 990 € et d'une dizaine d'heures supplémentaires. Les aides publiques — jusqu'à 1 000 € pour la Région Île-de-France — peuvent réduire fortement cette somme.</p></div></details><details><summary>Pourquoi le permis coûte-t-il plus cher à Paris qu'en province ?</summary><div><p>Le coût horaire des enseignants et des locaux y est plus élevé, et la circulation dense allonge souvent la formation de quelques heures. En contrepartie, un candidat formé à Paris conduit ensuite partout sans difficulté.</p></div></details><details><summary>Combien d'heures de conduite faut-il en moyenne ?</summary><div><p>Le minimum légal est de 20 heures en boîte manuelle, mais la moyenne nationale se situe autour de 30 à 35 heures. C'est cette différence qu'il faut anticiper dans le budget.</p></div></details></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#financement.html">Les aides au financement</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</section>
+<section class="page" data-page="blog/permis-a2-moto-paris.html" hidden>
+<div class="conteneur fil-ariane"><nav aria-label="Fil d'Ariane"><ol><li><a href="#index.html">Accueil</a></li><li><a href="#blog.html">Conseils</a></li><li aria-current="page">Permis A2 : déroulé, examens et budget de la formation moto</li></ol></nav></div>
+
+<article class="section" style="padding-top:2.5rem">
+  <div class="conteneur">
+    <div class="article">
+      <p class="article-meta">Conseils · 2 septembre 2026 · 7 min de lecture</p>
+      <h1>Permis A2 : déroulé, examens et budget de la formation moto</h1>
+      <p class="article__chapeau">Le permis A2 ouvre l'accès aux motos jusqu'à 35 kW dès 18 ans. Entre le plateau, la circulation et le code moto, voici comment se déroule réellement la formation, et ce qu'elle coûte à Paris.</p>
+
+      <h2>La réponse courte</h2>
+      <p>Le permis A2 s'obtient dès 18 ans, après une épreuve théorique moto et
+      <strong>20 heures de formation pratique minimum</strong> — 8 heures de plateau,
+      12 heures en circulation. Comptez environ 890 € pour un forfait complet à Paris, et
+      deux ans avant de pouvoir passer au permis A par une formation de 7 heures.</p>
+
+      <h2>Les conditions d'accès</h2>
+      <ul>
+        <li>Avoir 18 ans révolus le jour de l'examen.</li>
+        <li>Avoir réussi l'épreuve théorique moto (ETM), valable cinq ans.</li>
+        <li>Être apte médicalement — un contrôle est exigé dans certains cas seulement.</li>
+      </ul>
+
+      <h2>Le plateau, l'épreuve qui inquiète</h2>
+      <p>L'épreuve hors circulation enchaîne quatre exercices : les vérifications et questions
+      orales, le déplacement de la moto sans moteur, le parcours à allure lente, puis le
+      parcours à allure normale avec évitement et freinage d'urgence.</p>
+      <p>Elle se travaille par répétition. C'est la partie de la formation où le nombre
+      d'heures varie le plus d'un candidat à l'autre : les réflexes d'équilibre et de regard
+      ne s'acquièrent pas au même rythme pour tout le monde.</p>
+
+      <h2>La circulation</h2>
+      <p>Environ 40 minutes sur route, en liaison radio avec l'inspecteur qui suit en voiture.
+      À Paris, l'épreuve porte surtout sur la trajectoire de sécurité, la gestion des angles
+      morts et la cohabitation avec les bus, les taxis et les cyclistes.</p>
+
+      <div class="encadre">
+        <p><strong>Ce qui fait échouer le plus souvent :</strong> une trajectoire trop proche
+        du bord droit, un regard fixé sur la roue avant plutôt que loin devant, et une
+        insertion trop hésitante dans un flux dense.</p>
+      </div>
+
+      <h2>Le budget</h2>
+      <div class="tableau-enveloppe">
+  <table class="tarifs">
+    <caption>Coût d'un permis A2 à Paris</caption>
+    <thead><tr><th scope="col">Poste</th><th scope="col">Montant courant</th></tr></thead>
+    <tbody><tr><th scope="row">Forfait 20 h — plateau et circulation, code moto inclus</th><td>850 à 1 100 €</td></tr><tr><th scope="row">Heure de conduite supplémentaire</th><td>60 à 70 €</td></tr><tr><th scope="row">Redevance d'examen théorique moto</th><td>30 €</td></tr><tr><th scope="row">Équipement personnel (casque, gants, blouson, bottes)</th><td>300 à 700 €</td></tr><tr><th scope="row">Passerelle A2 vers A (7 h), deux ans plus tard</th><td>300 à 400 €</td></tr></tbody>
+  </table>
+</div>
+
+      <h2>Et après : la passerelle vers le permis A</h2>
+      <p>Après deux ans de permis A2, une formation de 7 heures — 2 heures de théorie,
+      2 heures de plateau, 3 heures en circulation — donne accès au permis A, sans limitation
+      de puissance et sans examen final.</p>
+
+      <div class="encadre">
+        <p><strong>Chez Auto Moto École Bizot</strong>, la formation A2 est assurée par un
+        enseignant moto dédié, avec prêt du casque et des gants pour les premières séances.
+        <a href="#permis-moto.html">Voir la formation moto</a> ou
+        <a href="#contact.html">prendre rendez-vous</a>.</p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<section class="section section--claire">
+  <div class="conteneur">
+    <div class="section__intro">
+      <span class="surtitre">Vous vous demandez…</span>
+      <h2>Permis A2 : questions fréquentes</h2>
+      <p>Les réponses ci-dessous sont volontairement courtes et complètes : c'est sous cette
+      forme que Google les affiche en résultat enrichi et que ChatGPT ou Gemini les citent.</p>
+    </div>
+    <div class="faq"><details><summary>Combien d'heures faut-il pour le permis A2 ?</summary><div><p>La formation pratique minimale est de 20 heures : 8 heures de plateau hors circulation et 12 heures en circulation. Beaucoup de candidats ajoutent quelques heures de plateau, l'épreuve de maniabilité étant la plus exigeante.</p></div></details><details><summary>Faut-il repasser le code pour le permis moto ?</summary><div><p>Oui, sauf si vous avez obtenu une autre catégorie de permis depuis moins de cinq ans. L'épreuve théorique moto (ETM) est spécifique : elle porte sur l'équipement, la trajectoire de sécurité et la mécanique du deux-roues.</p></div></details><details><summary>Quel budget prévoir pour le permis A2 à Paris ?</summary><div><p>Comptez environ 890 € pour un forfait de 20 heures tout inclus, auquel s'ajoutent les éventuelles heures supplémentaires — autour de 65 € — et l'équipement personnel.</p></div></details></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <div class="appel">
+      <h2>Envie de commencer&nbsp;?</h2>
+      <p>Un rendez-vous de 15 minutes à l'agence suffit pour monter votre dossier, choisir votre formule et fixer votre première leçon.</p>
+      <div class="boutons">
+        <a class="bouton bouton--principal" href="#contact.html">Demander un rappel</a>
+        <a class="bouton bouton--secondaire" href="tel:+33145852214">Appeler le 01 45 85 22 14</a>
+        <a class="bouton bouton--secondaire" href="#permis-moto.html">La formation moto</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</section>
+</div>
+
+  <div class="conteneur">
+    <div class="pied__grille">
+      <div>
+        <h2>Auto Moto École Bizot</h2>
+        <address>
+          113 avenue du Général Michel Bizot<br>75012 Paris<br>
+          <a href="tel:+33145852214">01 45 85 22 14</a><br>
+          <a href="mailto:contact@automotoecolebizot.com">contact@automotoecolebizot.com</a>
+        </address>
+        <p class="mention" style="color:rgba(255,255,255,.7)">
+          Agrément préfectoral n° E&nbsp;XX&nbsp;XXX&nbsp;XXXX&nbsp;0 — à compléter.
+        </p>
+      </div>
+      <div>
+        <h2>Formations</h2>
+        <ul><li><a href="#permis-voiture.html">Permis voiture</a></li><li><a href="#permis-moto.html">Permis moto</a></li><li><a href="#code-de-la-route.html">Code</a></li><li><a href="#tarifs.html">Tarifs</a></li><li><a href="#financement.html">Financement</a></li><li><a href="#auto-ecole-paris-12.html">Paris 12</a></li><li><a href="#blog.html">Conseils</a></li></ul>
+      </div>
+      <div>
+        <h2>Horaires</h2>
+        <dl class="pied__horaires"><div><dt>Lundi</dt><dd>10h–13h · 14h–18h</dd></div><div><dt>Mardi</dt><dd>10h–13h · 14h–18h</dd></div><div><dt>Mercredi</dt><dd>10h–13h</dd></div><div><dt>Jeudi</dt><dd>10h–13h · 14h–16h</dd></div><div><dt>Vendredi</dt><dd>10h–13h · 14h–18h</dd></div><div><dt>Samedi</dt><dd>10h–13h</dd></div><div><dt>Dimanche</dt><dd>Fermé</dd></div></dl>
+      </div>
+      <div>
+        <h2>Venir nous voir</h2>
+        <p class="mention" style="color:rgba(255,255,255,.85);max-width:16rem">
+          Métro Michel Bizot (ligne 8) à 3 minutes à pied, Porte Dorée (ligne 8) à 7 minutes.
+          Bus 46 et 87.
+        </p>
+        <p><a class="bouton bouton--principal" href="#contact.html">Prendre rendez-vous</a></p>
+      </div>
+    </div>
+    <div class="pied__bas">
+      <p class="sans-marge-bas">© 2026 Auto Moto École Bizot — 113 avenue du Général Michel Bizot 75012 Paris</p>
+      <p class="sans-marge-bas">Maquette réalisée par <a href="https://colletmarketing.com">Collet Marketing</a></p>
+    </div>
+  </div>
+
+<script>
+/* Maquette Auto Moto École Bizot — comportements d'interface.
+   Le site fonctionne sans JavaScript : le menu est visible au clavier, les
+   questions fréquentes sont des <details>, et les formulaires sont de vrais
+   formulaires. Ce fichier n'ajoute que le confort. */
+(function () {
+  "use strict";
+
+  /* Menu en petit écran ---------------------------------------------------- */
+  var bouton = document.querySelector("[data-menu-bouton]");
+  var nav = document.querySelector("[data-menu]");
+
+  if (bouton && nav) {
+    bouton.addEventListener("click", function () {
+      var ouvert = nav.getAttribute("data-ouvert") === "true";
+      nav.setAttribute("data-ouvert", String(!ouvert));
+      bouton.setAttribute("aria-expanded", String(!ouvert));
+    });
+
+    nav.addEventListener("click", function (e) {
+      if (e.target.closest("a")) {
+        nav.setAttribute("data-ouvert", "false");
+        bouton.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.getAttribute("data-ouvert") === "true") {
+        nav.setAttribute("data-ouvert", "false");
+        bouton.setAttribute("aria-expanded", "false");
+        bouton.focus();
+      }
+    });
+  }
+
+  /* Formulaires de démonstration ------------------------------------------
+     Aucun envoi réel : la maquette n'a pas de serveur. On confirme à l'écran
+     ce que ferait le site en production (courriel à l'auto-école + accusé de
+     réception au candidat), et on annonce le message aux lecteurs d'écran. */
+  Array.prototype.forEach.call(
+    document.querySelectorAll("form[data-demo]"),
+    function (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var retour = form.querySelector("[data-retour]");
+        if (!retour) return;
+        var prenom = (form.querySelector("[name=prenom]") || {}).value || "";
+        retour.innerHTML =
+          "<strong>Demande enregistrée" + (prenom ? ", " + escapeHtml(prenom) : "") + ".</strong> " +
+          "Sur le site en production, l'auto-école reçoit cette demande par courriel " +
+          "et vous rappelle sous 24 h ouvrées. Ceci est une maquette&nbsp;: aucune donnée n'est envoyée.";
+        retour.hidden = false;
+        retour.setAttribute("tabindex", "-1");
+        retour.focus();
+      });
+    }
+  );
+
+  function escapeHtml(t) {
+    return String(t).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+})();
+
+
+(function () {
+  "use strict";
+  var titres = {"index.html": "Auto-école à Paris 12 — permis voiture et moto | Auto Moto École Bizot", "permis-voiture.html": "Permis voiture à Paris 12 — permis B dès 990 € | Auto Moto École Bizot", "permis-moto.html": "Permis moto à Paris 12 — A1, A2, 125 cm³ | Auto Moto École Bizot", "code-de-la-route.html": "Code de la route à Paris 12 — cours en salle et en ligne | AME Bizot", "tarifs.html": "Tarifs permis voiture et moto à Paris 12 | Auto Moto École Bizot", "financement.html": "Financer son permis à Paris 12 — aides et permis à 1 € | AME Bizot", "auto-ecole-paris-12.html": "Auto-école Paris 12 — permis voiture, moto et code | AME Bizot", "a-propos.html": "L'auto-école — équipe et engagements | Auto Moto École Bizot", "contact.html": "Contact et inscription — auto-école Paris 12 | AME Bizot", "blog.html": "Conseils permis de conduire — auto-école Paris 12 | AME Bizot", "blog/prix-permis-de-conduire-paris.html": "Prix du permis de conduire à Paris en 2026 | AME Bizot", "blog/permis-a2-moto-paris.html": "Permis A2 à Paris — déroulé, examens et budget | AME Bizot"};
+  var pages = document.querySelectorAll("[data-page]");
+  function afficher(clef) {
+    if (!titres[clef]) clef = "index.html";
+    Array.prototype.forEach.call(pages, function (p) {
+      p.hidden = p.getAttribute("data-page") !== clef;
+    });
+    document.title = titres[clef];
+    Array.prototype.forEach.call(document.querySelectorAll(".nav__lien"), function (a) {
+      var cible = (a.getAttribute("href") || "").replace(/^#/, "");
+      if (cible === clef) { a.setAttribute("aria-current", "page"); }
+      else { a.removeAttribute("aria-current"); }
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", function () {
+    afficher(decodeURIComponent(location.hash.slice(1)));
+  });
+  afficher(decodeURIComponent(location.hash.slice(1)) || "index.html");
+})();
+
+</script>
