@@ -59,7 +59,15 @@
    -------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Le tiroir fermé est rangé hors écran par translateX(100%). Sur un écran
+     de 320 px, sa boîte élargissait la zone de défilement et la page se
+     décalait latéralement. « clip » supprime ce débordement sans créer de
+     conteneur de défilement — contrairement à « hidden », qui casserait
+     l'en-tête collant. */
+  overflow-x: clip;
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -73,6 +81,9 @@ body {
   color: var(--texte);
   background: var(--fond-page);
   -webkit-font-smoothing: antialiased;
+  /* Une adresse électronique ne se coupe nulle part : sur un écran étroit,
+     contact@automotoecolebizot.com débordait du pied de page. */
+  overflow-wrap: break-word;
 }
 
 h1, h2, h3, h4 { line-height: 1.15; margin: 0 0 .6em; letter-spacing: -.02em; font-weight: 800; }
@@ -133,11 +144,14 @@ a:hover { color: var(--bleu-fonce); }
 }
 .section--sombre .surtitre { color: var(--accent-sombre); }
 
+/* minmax(min(Xrem, 100%), 1fr) et non minmax(Xrem, 1fr) : sur un écran de
+   320 px, un minimum de 20rem dépasse la largeur du conteneur et la page se
+   met à défiler latéralement. Le min() laisse la colonne se réduire. */
 .grille { display: grid; gap: var(--gouttiere); }
-.grille--2 { grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
-.grille--3 { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
-.grille--4 { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
-.grille--texte-media { grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); align-items: center; gap: 3rem; }
+.grille--2 { grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr)); }
+.grille--3 { grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); }
+.grille--4 { grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
+.grille--texte-media { grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr)); align-items: center; gap: 3rem; }
 
 /* --------------------------------------------------------------------------
    4. En-tête
@@ -311,13 +325,45 @@ a:hover { color: var(--bleu-fonce); }
 
 body.tiroir-ouvert { overflow: hidden; }
 
+/* En dessous de 80rem, la barre garde ses deux actions — s'inscrire et ouvrir
+   le menu — dans le même gabarit ; seule la navigation passe dans le tiroir.
+   Puis, à mesure que la place manque, on retire par ordre d'importance
+   décroissante : le libellé du téléphone, le téléphone lui-même (il est en
+   gros en bas du tiroir), le mot « Menu », enfin les véhicules du logotype.
+   Le bouton d'inscription, lui, ne bouge jamais. */
 @media (max-width: 80rem) {
   .nav { display: none; }
-  .entete__actions .entete__cta { display: none; }
   .entete__actions .bouton-menu { display: inline-flex; }
   .entete__actions { margin-left: auto; }
   .tel-entete__texte { display: none; }
   .entete__actions .tel-entete { padding-inline: 0; }
+}
+
+@media (max-width: 48rem) {
+  .entete__actions .tel-entete { display: none; }
+  .entete__actions .bouton-menu { padding: 0 .85rem; }
+}
+
+/* Le mot « Menu » cède avant le logotype : l'icône à trois barres se comprend
+   sans libellé, et le bouton garde son nom accessible. */
+@media (max-width: 36rem) {
+  .bouton-menu__texte { display: none; }
+  .entete__actions .bouton-menu { padding: 0 .8rem; }
+  .logo__ville { display: none; }
+}
+
+@media (max-width: 24rem) {
+  .entete__actions .entete__cta { padding: 0 .85rem; }
+  .logo__vehicule { display: none; }
+  .logo__mot { font-size: 1.0625rem; }
+}
+
+/* Écrans de 320 px : le logotype cède les derniers pixels, jamais le bouton. */
+@media (max-width: 22rem) {
+  .bouton { padding: .8rem 1rem; }
+  .entete__barre { gap: .45rem; }
+  .logo__mot { font-size: .9375rem; }
+  .logo__sous { letter-spacing: .14em; }
 }
 
 /* Au-delà, le tiroir n'existe plus : la barre suffit. */
@@ -330,6 +376,9 @@ body.tiroir-ouvert { overflow: hidden; }
    -------------------------------------------------------------------------- */
 .bouton {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  /* Un bouton ne dépasse jamais son conteneur : « Appeler le 01 45 85 22 14 »
+     fait 329 px sur un écran de 320. Le libellé passe alors à la ligne. */
+  max-width: 100%; text-align: center;
   min-height: 48px; padding: .8rem 1.4rem;
   border: 2px solid transparent; border-radius: var(--rayon);
   font: inherit; font-size: var(--petit); font-weight: 800; text-decoration: none;
@@ -363,7 +412,7 @@ body.tiroir-ouvert { overflow: hidden; }
   background: repeating-linear-gradient(90deg, var(--blanc) 0 3rem, transparent 3rem 5.5rem);
   opacity: .85;
 }
-.heros__grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 3rem; align-items: center; }
+.heros__grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr)); gap: 3rem; align-items: center; }
 .heros h1 { margin-bottom: 1rem; }
 .heros h1 em { font-style: normal; color: var(--accent-sombre); }
 .heros__accroche { font-size: 1.25rem; color: rgba(255,255,255,.85); max-width: 34rem; }
@@ -484,7 +533,7 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 .champ textarea { min-height: 7rem; resize: vertical; }
 .champ input:focus, .champ select:focus, .champ textarea:focus { border-color: var(--bleu); }
 .champ__aide { font-size: var(--mention); color: var(--texte-doux); margin: .35rem 0 0; }
-.champs-2 { display: grid; gap: 0 1rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.champs-2 { display: grid; gap: 0 1rem; grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr)); }
 .mention { font-size: var(--mention); color: var(--texte-doux); }
 .formulaire__retour {
   margin-top: 1rem; padding: 1rem 1.15rem; border-radius: var(--rayon);
@@ -557,9 +606,9 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 .pied a { color: rgba(255,255,255,.85); text-decoration: none; }
 .pied a:hover { color: var(--accent-sombre); text-decoration: underline; }
 .pied h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent-sombre); margin-bottom: 1rem; }
-.pied__grille { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.pied__grille { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
 .pied ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: var(--petit); }
-.pied address { font-style: normal; font-size: var(--petit); line-height: 1.8; }
+.pied address { font-style: normal; font-size: var(--petit); line-height: 1.8; overflow-wrap: anywhere; }
 .pied__horaires { font-size: var(--petit); }
 .pied__horaires div { display: flex; justify-content: space-between; gap: 1rem; max-width: 18rem; padding: .15rem 0; }
 .pied__horaires dt { color: rgba(255,255,255,.75); }

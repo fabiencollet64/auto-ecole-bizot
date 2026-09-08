@@ -125,7 +125,8 @@ def logotype(prof=0):
         '<span class="logo__mot">AUT%sM%sT%s</span>'
         '%s'
         '</span>'
-        '<span class="logo__sous" aria-hidden="true">ÉCOLE · BIZOT · PARIS 12<sup>e</sup></span>'
+        '<span class="logo__sous" aria-hidden="true">ÉCOLE · BIZOT'
+        '<span class="logo__ville"> · PARIS 12<sup>e</sup></span></span>'
         % (icone("voiture", "logo__vehicule"), anneau, anneau, anneau,
            icone("moto", "logo__vehicule"))
     )
@@ -315,8 +316,9 @@ def entete(page, prof):
     <div class="entete__actions">
       <a class="tel-entete" href="tel:%s">%s<span class="tel-entete__texte">%s</span></a>
       <a class="bouton bouton--principal entete__cta" href="%scontact.html">S'inscrire</a>
-      <button class="bouton-menu" type="button" data-tiroir-ouvrir
-              aria-expanded="false" aria-controls="tiroir">%sMenu</button>
+      <button class="bouton-menu" type="button" data-tiroir-ouvrir aria-label="Menu"
+              aria-expanded="false" aria-controls="tiroir">%s<span
+              class="bouton-menu__texte">Menu</span></button>
     </div>
   </div>
 </header>
