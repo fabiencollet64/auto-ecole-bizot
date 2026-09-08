@@ -182,16 +182,45 @@ a:hover { color: var(--bleu-fonce); }
 .logo__image { height: 2.5rem; width: auto; }
 
 .nav { margin-left: auto; }
-.nav__liste { display: flex; align-items: center; gap: .1rem; list-style: none; margin: 0; padding: 0; }
+.nav__liste { display: flex; align-items: center; gap: .15rem; list-style: none; margin: 0; padding: 0; }
 .nav__lien {
-  display: block; padding: .55rem .6rem; border-radius: var(--rayon); white-space: nowrap;
+  display: flex; align-items: center; gap: .3rem;
+  padding: .55rem .7rem; border-radius: var(--rayon); white-space: nowrap;
   color: var(--blanc); text-decoration: none; font-size: .9375rem; font-weight: 600;
 }
-.nav__inscription .bouton { padding: .6rem 1rem; font-size: .9375rem; }
 .nav__lien:hover { background: var(--bleu-profond); color: var(--blanc); }
-.nav__lien[aria-current="page"] { color: var(--accent-sombre); }
+.nav__lien[aria-current="page"], .nav__declencheur[data-courant="true"] { color: var(--accent-sombre); }
+
+/* Déroulant « Formations » — ouvert au survol pour la souris, au clic ou au
+   clavier pour tout le monde. L'état vit sur l'élément de liste, jamais sur
+   le seul survol : sans cela, la navigation au clavier serait impossible. */
+.nav__groupe { position: relative; }
+.nav__declencheur { background: none; border: 0; font: inherit; font-size: .9375rem; font-weight: 600; cursor: pointer; }
+.nav__chevron { width: .9rem; height: .9rem; fill: currentColor; transition: transform .15s ease; }
+.nav__groupe[data-ouvert="true"] .nav__chevron { transform: rotate(180deg); }
+
+.nav__sous {
+  position: absolute; top: calc(100% + .35rem); left: 0; z-index: 5;
+  min-width: 14rem; list-style: none; margin: 0; padding: .35rem;
+  background: var(--blanc); border-radius: var(--rayon-large);
+  box-shadow: var(--ombre-forte);
+  opacity: 0; visibility: hidden; transform: translateY(-.35rem);
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+}
+.nav__groupe[data-ouvert="true"] .nav__sous,
+.nav__groupe:focus-within .nav__sous { opacity: 1; visibility: visible; transform: none; }
+@media (hover: hover) {
+  .nav__groupe:hover .nav__sous { opacity: 1; visibility: visible; transform: none; }
+}
+.nav__sous-lien {
+  display: block; padding: .65rem .75rem; border-radius: .5rem;
+  color: var(--texte); text-decoration: none; font-size: .9375rem; font-weight: 600;
+}
+.nav__sous-lien:hover { background: var(--bleu-voile); color: var(--marque); }
+.nav__sous-lien[aria-current="page"] { color: var(--marque); background: var(--bleu-voile); }
 
 .entete__actions { display: flex; align-items: center; gap: .75rem; flex: 0 0 auto; }
+.entete__cta { padding: .6rem 1.1rem; font-size: .9375rem; }
 .tel-entete {
   display: inline-flex; align-items: center; gap: .5rem;
   color: var(--blanc); text-decoration: none; font-weight: 700; white-space: nowrap;
@@ -203,25 +232,85 @@ a:hover { color: var(--bleu-fonce); }
   background: var(--bleu-profond); color: var(--blanc);
   border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
   font: inherit; font-size: var(--petit); font-weight: 700;
-  padding: .6rem .9rem; cursor: pointer; min-height: 44px;
+  padding: .6rem .95rem; cursor: pointer; min-height: 44px;
 }
+.bouton-menu__icone { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+
+/* --------------------------------------------------------------------------
+   4 bis. Tiroir de navigation — en dessous de 80rem
+   Le menu glisse depuis la droite au-dessus d'un voile. Le téléphone et le
+   bouton d'inscription sont épinglés en bas du tiroir : ce sont les deux
+   actions qui comptent, elles ne doivent jamais sortir de l'écran.
+   -------------------------------------------------------------------------- */
+.voile {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(10, 36, 104, .6);
+  opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s;
+}
+.voile[data-ouvert="true"] { opacity: 1; visibility: visible; }
+
+.tiroir {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 70;
+  width: min(22.5rem, 88vw);
+  display: flex; flex-direction: column;
+  background: var(--bleu-nuit); color: var(--blanc);
+  box-shadow: -18px 0 48px rgba(10, 36, 104, .45);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .25s ease, visibility .25s;
+}
+.tiroir[data-ouvert="true"] { transform: none; visibility: visible; }
+
+.tiroir__entete {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.14);
+}
+.tiroir__titre { font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-sombre); }
+.tiroir__fermer {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0; cursor: pointer;
+  background: var(--bleu-profond); color: var(--blanc);
+  border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
+}
+.tiroir__fermer svg { width: 1.25rem; height: 1.25rem; fill: currentColor; }
+
+.tiroir__corps { flex: 1; overflow-y: auto; padding: .25rem 1.25rem 1.5rem; -webkit-overflow-scrolling: touch; }
+.tiroir__section {
+  margin: 1.5rem 0 .25rem; font-size: .75rem; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent-sombre);
+}
+.tiroir__liste { list-style: none; margin: 0; padding: 0; }
+.tiroir__lien {
+  display: flex; align-items: center; min-height: 48px;
+  padding: .6rem 0; color: var(--blanc); text-decoration: none;
+  font-size: 1.0625rem; font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.tiroir__lien:hover { color: var(--accent-sombre); }
+.tiroir__lien[aria-current="page"] { color: var(--accent-sombre); }
+
+.tiroir__pied {
+  display: grid; gap: .6rem; padding: 1.25rem;
+  background: var(--bleu-profond); border-top: 1px solid rgba(255,255,255,.14);
+}
+.tiroir__tel {
+  display: inline-flex; align-items: center; gap: .55rem;
+  color: var(--blanc); text-decoration: none; font-size: 1.25rem; font-weight: 800;
+}
+.tiroir__tel svg { width: 1.3rem; height: 1.3rem; fill: var(--accent-sombre); }
+.tiroir__horaire { margin: 0; font-size: var(--mention); color: rgba(255,255,255,.75); max-width: none; }
+
+body.tiroir-ouvert { overflow: hidden; }
 
 @media (max-width: 80rem) {
-  .logo { order: 1; }
-  .entete__actions { order: 2; margin-left: auto; }
-  .bouton-menu { display: inline-flex; order: 3; }
-  .nav { order: 4; }
+  .nav, .entete__cta { display: none; }
+  .bouton-menu { display: inline-flex; }
+  .entete__actions { margin-left: auto; }
   .tel-entete__texte { display: none; }
-  .nav {
-    position: absolute; left: 0; right: 0; top: 100%;
-    background: var(--bleu-nuit); border-bottom: 3px solid var(--rouge);
-    margin: 0; padding: .5rem 1.25rem 1.25rem;
-    display: none;
-  }
-  .nav[data-ouvert="true"] { display: block; }
-  .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__lien { padding: .85rem .5rem; border-bottom: 1px solid rgba(255,255,255,.1); }
-  .nav__inscription { margin-top: .9rem; }
+}
+
+/* Au-delà, le tiroir n'existe plus : la barre suffit. */
+@media (min-width: 80.0625rem) {
+  .tiroir, .voile { display: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -495,23 +584,42 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 </style>
 <a class="saut-navigation" href="#contenu">Aller au contenu</a>
 <div class="bandeau-maquette">Maquette de démonstration réalisée par <strong>Collet Marketing</strong> pour Auto Moto École Bizot — contenus, tarifs et photographies à valider avant mise en ligne.</div>
-
+<header class="entete">
   <div class="conteneur entete__barre">
     <a class="logo" href="#index.html" aria-current="page">
       <span class="logo__lockup" aria-hidden="true"><svg class="logo__vehicule" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 11l1.5-4.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.7L19 11h1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm2.2 0h9.6l-1.1-3.4a.6.6 0 0 0-.5-.4H8.8a.6.6 0 0 0-.5.4zM7 13.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zm10 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg><span class="logo__mot">AUT<i class="logo__o"></i>M<i class="logo__o"></i>T<i class="logo__o"></i></span><svg class="logo__vehicule" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm13 0a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm-13 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM14 5h4v2h-2.6l1.3 2.4A5.5 5.5 0 0 1 18.5 12h-2a3.5 3.5 0 0 0-.8-1.6L14.4 12H9.9a5.5 5.5 0 0 0-4.4-2H3V8h2.5a7.5 7.5 0 0 1 5.6 2.5h2.1l-2-3.7A1.5 1.5 0 0 1 14 5z"/></svg></span><span class="logo__sous" aria-hidden="true">ÉCOLE · BIZOT · PARIS 12<sup>e</sup></span>
       <span class="visuellement-cache">Auto Moto École Bizot — accueil</span>
     </a>
-    <button class="bouton-menu" type="button" data-menu-bouton aria-expanded="false" aria-controls="menu">
-      Menu
-    </button>
-    <nav class="nav" id="menu" data-menu aria-label="Navigation principale">
-      <ul class="nav__liste"><li><a class="nav__lien" href="#permis-voiture.html">Permis voiture</a></li><li><a class="nav__lien" href="#permis-moto.html">Permis moto</a></li><li><a class="nav__lien" href="#code-de-la-route.html">Code</a></li><li><a class="nav__lien" href="#tarifs.html">Tarifs</a></li><li><a class="nav__lien" href="#financement.html">Financement</a></li><li><a class="nav__lien" href="#auto-ecole-paris-12.html">Paris 12</a></li><li><a class="nav__lien" href="#blog.html">Conseils</a></li><li class="nav__inscription"><a class="bouton bouton--principal" href="#contact.html">S'inscrire</a></li></ul>
+    <nav class="nav" aria-label="Navigation principale">
+      <ul class="nav__liste"><li class="nav__groupe" data-groupe><button class="nav__lien nav__declencheur" type="button" data-groupe-bouton aria-expanded="false" aria-controls="menu-formations">Formations<svg class="nav__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15.4 5.6 9l1.4-1.4 5 5 5-5L18.4 9z"/></svg></button><ul class="nav__sous" id="menu-formations"><li><a class="nav__sous-lien" href="#permis-voiture.html">Permis voiture</a></li><li><a class="nav__sous-lien" href="#permis-moto.html">Permis moto</a></li><li><a class="nav__sous-lien" href="#code-de-la-route.html">Code de la route</a></li></ul></li><li><a class="nav__lien" href="#tarifs.html">Tarifs</a></li><li><a class="nav__lien" href="#financement.html">Financement</a></li><li><a class="nav__lien" href="#blog.html">Conseils</a></li><li><a class="nav__lien" href="#a-propos.html">L'auto-école</a></li></ul>
     </nav>
     <div class="entete__actions">
       <a class="tel-entete" href="tel:+33145852214"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .58 3.6 1 1 0 0 1-.25 1z"/></svg><span class="tel-entete__texte">01 45 85 22 14</span></a>
+      <a class="bouton bouton--principal entete__cta" href="#contact.html">S'inscrire</a>
+      <button class="bouton-menu" type="button" data-tiroir-ouvrir
+              aria-expanded="false" aria-controls="tiroir"><svg class="bouton-menu__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>Menu</button>
     </div>
   </div>
+</header>
 
+<div class="voile" data-voile></div>
+<div class="tiroir" id="tiroir" data-tiroir role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="tiroir__entete">
+    <span class="tiroir__titre">Menu</span>
+    <button class="tiroir__fermer" type="button" data-tiroir-fermer aria-label="Fermer le menu"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 10.6 5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4z"/></svg></button>
+  </div>
+  <nav class="tiroir__corps" aria-label="Navigation du menu">
+    <p class="tiroir__section" id="tiroir-formations">Formations</p>
+    <ul class="tiroir__liste" aria-labelledby="tiroir-formations"><li><a class="tiroir__lien" href="#permis-voiture.html">Permis voiture</a></li><li><a class="tiroir__lien" href="#permis-moto.html">Permis moto</a></li><li><a class="tiroir__lien" href="#code-de-la-route.html">Code de la route</a></li></ul>
+    <p class="tiroir__section" id="tiroir-infos">Infos pratiques</p>
+    <ul class="tiroir__liste" aria-labelledby="tiroir-infos"><li><a class="tiroir__lien" href="#tarifs.html">Tarifs</a></li><li><a class="tiroir__lien" href="#financement.html">Financement</a></li><li><a class="tiroir__lien" href="#blog.html">Conseils</a></li><li><a class="tiroir__lien" href="#a-propos.html">L'auto-école</a></li><li><a class="tiroir__lien" href="#auto-ecole-paris-12.html">Auto-école Paris 12</a></li><li><a class="tiroir__lien" href="#contact.html">Contact et accès</a></li></ul>
+  </nav>
+  <div class="tiroir__pied">
+    <a class="tiroir__tel" href="tel:+33145852214"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .58 3.6 1 1 0 0 1-.25 1z"/></svg>01 45 85 22 14</a>
+    <p class="tiroir__horaire">Ouvert du lundi au samedi — 113 av. du Général Michel Bizot</p>
+    <a class="bouton bouton--principal bouton--large" href="#contact.html">S'inscrire</a>
+  </div>
+</div>
 <div id="contenu">
 <section class="page" data-page="index.html" hidden>
 
@@ -1667,7 +1775,11 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
       </div>
       <div>
         <h2>Formations</h2>
-        <ul><li><a href="#permis-voiture.html">Permis voiture</a></li><li><a href="#permis-moto.html">Permis moto</a></li><li><a href="#code-de-la-route.html">Code</a></li><li><a href="#tarifs.html">Tarifs</a></li><li><a href="#financement.html">Financement</a></li><li><a href="#auto-ecole-paris-12.html">Paris 12</a></li><li><a href="#blog.html">Conseils</a></li></ul>
+        <ul><li><a href="#permis-voiture.html">Permis voiture</a></li><li><a href="#permis-moto.html">Permis moto</a></li><li><a href="#code-de-la-route.html">Code de la route</a></li></ul>
+      </div>
+      <div>
+        <h2>Infos pratiques</h2>
+        <ul><li><a href="#tarifs.html">Tarifs</a></li><li><a href="#financement.html">Financement</a></li><li><a href="#blog.html">Conseils</a></li><li><a href="#a-propos.html">L'auto-école</a></li><li><a href="#auto-ecole-paris-12.html">Auto-école Paris 12</a></li><li><a href="#contact.html">Contact et accès</a></li></ul>
       </div>
       <div>
         <h2>Horaires</h2>
@@ -1690,36 +1802,112 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
 
 <script>
 /* Maquette Auto Moto École Bizot — comportements d'interface.
-   Le site fonctionne sans JavaScript : le menu est visible au clavier, les
-   questions fréquentes sont des <details>, et les formulaires sont de vrais
-   formulaires. Ce fichier n'ajoute que le confort. */
+   Le site fonctionne sans JavaScript : les liens du tiroir sont de vrais
+   liens, les questions fréquentes des <details>, les formulaires de vrais
+   formulaires. Ce fichier n'ajoute que le confort — et le confort, ici, tient
+   surtout à ce que le clavier et les lecteurs d'écran suivent. */
 (function () {
   "use strict";
 
-  /* Menu en petit écran ---------------------------------------------------- */
-  var bouton = document.querySelector("[data-menu-bouton]");
-  var nav = document.querySelector("[data-menu]");
+  var FOCALISABLES = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-  if (bouton && nav) {
-    bouton.addEventListener("click", function () {
-      var ouvert = nav.getAttribute("data-ouvert") === "true";
-      nav.setAttribute("data-ouvert", String(!ouvert));
-      bouton.setAttribute("aria-expanded", String(!ouvert));
+  /* Tiroir de navigation ---------------------------------------------------- */
+  var tiroir = document.querySelector("[data-tiroir]");
+  var voile = document.querySelector("[data-voile]");
+  var ouvrir = document.querySelector("[data-tiroir-ouvrir]");
+  var fermer = document.querySelector("[data-tiroir-fermer]");
+
+  if (tiroir && voile && ouvrir && fermer) {
+    var declencheur = null;
+
+    var ouvrirTiroir = function () {
+      declencheur = document.activeElement;
+      tiroir.setAttribute("data-ouvert", "true");
+      voile.setAttribute("data-ouvert", "true");
+      ouvrir.setAttribute("aria-expanded", "true");
+      document.body.classList.add("tiroir-ouvert");
+      // Le tiroir passe de visibility:hidden à visible : tant que ce style
+      // n'est pas appliqué, le bouton refuse le focus — l'appeler tout de
+      // suite laisse le clavier sur le bouton « Menu », derrière le voile.
+      // Deux images d'attente suffisent, le style est alors recalculé.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { fermer.focus(); });
+      });
+    };
+
+    var fermerTiroir = function () {
+      tiroir.removeAttribute("data-ouvert");
+      voile.removeAttribute("data-ouvert");
+      ouvrir.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("tiroir-ouvert");
+      if (declencheur && document.contains(declencheur)) declencheur.focus();
+    };
+
+    var estOuvert = function () { return tiroir.getAttribute("data-ouvert") === "true"; };
+
+    ouvrir.addEventListener("click", ouvrirTiroir);
+    fermer.addEventListener("click", fermerTiroir);
+    voile.addEventListener("click", fermerTiroir);
+
+    tiroir.addEventListener("click", function (e) {
+      if (e.target.closest("a")) fermerTiroir();
     });
 
-    nav.addEventListener("click", function (e) {
-      if (e.target.closest("a")) {
-        nav.setAttribute("data-ouvert", "false");
-        bouton.setAttribute("aria-expanded", "false");
+    /* Tant que le tiroir est ouvert, la tabulation y reste enfermée : sinon le
+       clavier part se promener dans la page masquée derrière le voile. */
+    document.addEventListener("keydown", function (e) {
+      if (!estOuvert()) return;
+      if (e.key === "Escape") { fermerTiroir(); return; }
+      if (e.key !== "Tab") return;
+      var cibles = tiroir.querySelectorAll(FOCALISABLES);
+      if (!cibles.length) return;
+      var premier = cibles[0];
+      var dernier = cibles[cibles.length - 1];
+      if (e.shiftKey && document.activeElement === premier) {
+        e.preventDefault();
+        dernier.focus();
+      } else if (!e.shiftKey && document.activeElement === dernier) {
+        e.preventDefault();
+        premier.focus();
       }
+    });
+
+    /* Repassé en grand écran, le tiroir n'a plus lieu d'être. */
+    if (window.matchMedia) {
+      var large = window.matchMedia("(min-width: 80.0625rem)");
+      var surveiller = function (m) { if (m.matches && estOuvert()) fermerTiroir(); };
+      if (large.addEventListener) large.addEventListener("change", surveiller);
+      else if (large.addListener) large.addListener(surveiller);
+    }
+  }
+
+  /* Déroulant « Formations » de la barre ------------------------------------ */
+  var groupe = document.querySelector("[data-groupe]");
+  var groupeBouton = document.querySelector("[data-groupe-bouton]");
+
+  if (groupe && groupeBouton) {
+    var basculer = function (ouvert) {
+      groupe.setAttribute("data-ouvert", String(ouvert));
+      groupeBouton.setAttribute("aria-expanded", String(ouvert));
+    };
+
+    groupeBouton.addEventListener("click", function () {
+      basculer(groupe.getAttribute("data-ouvert") !== "true");
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && nav.getAttribute("data-ouvert") === "true") {
-        nav.setAttribute("data-ouvert", "false");
-        bouton.setAttribute("aria-expanded", "false");
-        bouton.focus();
+      if (e.key === "Escape" && groupe.getAttribute("data-ouvert") === "true") {
+        basculer(false);
+        groupeBouton.focus();
       }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!groupe.contains(e.target)) basculer(false);
+    });
+
+    groupe.addEventListener("focusout", function (e) {
+      if (!groupe.contains(e.relatedTarget)) basculer(false);
     });
   }
 

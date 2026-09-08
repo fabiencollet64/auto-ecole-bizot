@@ -180,16 +180,45 @@ a:hover { color: var(--bleu-fonce); }
 .logo__image { height: 2.5rem; width: auto; }
 
 .nav { margin-left: auto; }
-.nav__liste { display: flex; align-items: center; gap: .1rem; list-style: none; margin: 0; padding: 0; }
+.nav__liste { display: flex; align-items: center; gap: .15rem; list-style: none; margin: 0; padding: 0; }
 .nav__lien {
-  display: block; padding: .55rem .6rem; border-radius: var(--rayon); white-space: nowrap;
+  display: flex; align-items: center; gap: .3rem;
+  padding: .55rem .7rem; border-radius: var(--rayon); white-space: nowrap;
   color: var(--blanc); text-decoration: none; font-size: .9375rem; font-weight: 600;
 }
-.nav__inscription .bouton { padding: .6rem 1rem; font-size: .9375rem; }
 .nav__lien:hover { background: var(--bleu-profond); color: var(--blanc); }
-.nav__lien[aria-current="page"] { color: var(--accent-sombre); }
+.nav__lien[aria-current="page"], .nav__declencheur[data-courant="true"] { color: var(--accent-sombre); }
+
+/* Déroulant « Formations » — ouvert au survol pour la souris, au clic ou au
+   clavier pour tout le monde. L'état vit sur l'élément de liste, jamais sur
+   le seul survol : sans cela, la navigation au clavier serait impossible. */
+.nav__groupe { position: relative; }
+.nav__declencheur { background: none; border: 0; font: inherit; font-size: .9375rem; font-weight: 600; cursor: pointer; }
+.nav__chevron { width: .9rem; height: .9rem; fill: currentColor; transition: transform .15s ease; }
+.nav__groupe[data-ouvert="true"] .nav__chevron { transform: rotate(180deg); }
+
+.nav__sous {
+  position: absolute; top: calc(100% + .35rem); left: 0; z-index: 5;
+  min-width: 14rem; list-style: none; margin: 0; padding: .35rem;
+  background: var(--blanc); border-radius: var(--rayon-large);
+  box-shadow: var(--ombre-forte);
+  opacity: 0; visibility: hidden; transform: translateY(-.35rem);
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+}
+.nav__groupe[data-ouvert="true"] .nav__sous,
+.nav__groupe:focus-within .nav__sous { opacity: 1; visibility: visible; transform: none; }
+@media (hover: hover) {
+  .nav__groupe:hover .nav__sous { opacity: 1; visibility: visible; transform: none; }
+}
+.nav__sous-lien {
+  display: block; padding: .65rem .75rem; border-radius: .5rem;
+  color: var(--texte); text-decoration: none; font-size: .9375rem; font-weight: 600;
+}
+.nav__sous-lien:hover { background: var(--bleu-voile); color: var(--marque); }
+.nav__sous-lien[aria-current="page"] { color: var(--marque); background: var(--bleu-voile); }
 
 .entete__actions { display: flex; align-items: center; gap: .75rem; flex: 0 0 auto; }
+.entete__cta { padding: .6rem 1.1rem; font-size: .9375rem; }
 .tel-entete {
   display: inline-flex; align-items: center; gap: .5rem;
   color: var(--blanc); text-decoration: none; font-weight: 700; white-space: nowrap;
@@ -201,25 +230,85 @@ a:hover { color: var(--bleu-fonce); }
   background: var(--bleu-profond); color: var(--blanc);
   border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
   font: inherit; font-size: var(--petit); font-weight: 700;
-  padding: .6rem .9rem; cursor: pointer; min-height: 44px;
+  padding: .6rem .95rem; cursor: pointer; min-height: 44px;
 }
+.bouton-menu__icone { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+
+/* --------------------------------------------------------------------------
+   4 bis. Tiroir de navigation — en dessous de 80rem
+   Le menu glisse depuis la droite au-dessus d'un voile. Le téléphone et le
+   bouton d'inscription sont épinglés en bas du tiroir : ce sont les deux
+   actions qui comptent, elles ne doivent jamais sortir de l'écran.
+   -------------------------------------------------------------------------- */
+.voile {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(10, 36, 104, .6);
+  opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s;
+}
+.voile[data-ouvert="true"] { opacity: 1; visibility: visible; }
+
+.tiroir {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 70;
+  width: min(22.5rem, 88vw);
+  display: flex; flex-direction: column;
+  background: var(--bleu-nuit); color: var(--blanc);
+  box-shadow: -18px 0 48px rgba(10, 36, 104, .45);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform .25s ease, visibility .25s;
+}
+.tiroir[data-ouvert="true"] { transform: none; visibility: visible; }
+
+.tiroir__entete {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.14);
+}
+.tiroir__titre { font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-sombre); }
+.tiroir__fermer {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0; cursor: pointer;
+  background: var(--bleu-profond); color: var(--blanc);
+  border: 1px solid rgba(255,255,255,.22); border-radius: var(--rayon);
+}
+.tiroir__fermer svg { width: 1.25rem; height: 1.25rem; fill: currentColor; }
+
+.tiroir__corps { flex: 1; overflow-y: auto; padding: .25rem 1.25rem 1.5rem; -webkit-overflow-scrolling: touch; }
+.tiroir__section {
+  margin: 1.5rem 0 .25rem; font-size: .75rem; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent-sombre);
+}
+.tiroir__liste { list-style: none; margin: 0; padding: 0; }
+.tiroir__lien {
+  display: flex; align-items: center; min-height: 48px;
+  padding: .6rem 0; color: var(--blanc); text-decoration: none;
+  font-size: 1.0625rem; font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.tiroir__lien:hover { color: var(--accent-sombre); }
+.tiroir__lien[aria-current="page"] { color: var(--accent-sombre); }
+
+.tiroir__pied {
+  display: grid; gap: .6rem; padding: 1.25rem;
+  background: var(--bleu-profond); border-top: 1px solid rgba(255,255,255,.14);
+}
+.tiroir__tel {
+  display: inline-flex; align-items: center; gap: .55rem;
+  color: var(--blanc); text-decoration: none; font-size: 1.25rem; font-weight: 800;
+}
+.tiroir__tel svg { width: 1.3rem; height: 1.3rem; fill: var(--accent-sombre); }
+.tiroir__horaire { margin: 0; font-size: var(--mention); color: rgba(255,255,255,.75); max-width: none; }
+
+body.tiroir-ouvert { overflow: hidden; }
 
 @media (max-width: 80rem) {
-  .logo { order: 1; }
-  .entete__actions { order: 2; margin-left: auto; }
-  .bouton-menu { display: inline-flex; order: 3; }
-  .nav { order: 4; }
+  .nav, .entete__cta { display: none; }
+  .bouton-menu { display: inline-flex; }
+  .entete__actions { margin-left: auto; }
   .tel-entete__texte { display: none; }
-  .nav {
-    position: absolute; left: 0; right: 0; top: 100%;
-    background: var(--bleu-nuit); border-bottom: 3px solid var(--rouge);
-    margin: 0; padding: .5rem 1.25rem 1.25rem;
-    display: none;
-  }
-  .nav[data-ouvert="true"] { display: block; }
-  .nav__liste { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__lien { padding: .85rem .5rem; border-bottom: 1px solid rgba(255,255,255,.1); }
-  .nav__inscription { margin-top: .9rem; }
+}
+
+/* Au-delà, le tiroir n'existe plus : la barre suffit. */
+@media (min-width: 80.0625rem) {
+  .tiroir, .voile { display: none; }
 }
 
 /* --------------------------------------------------------------------------

@@ -58,9 +58,13 @@ def construire():
     css = lire("assets/css/bizot.css")
     js = lire("assets/js/site.js")
 
-    entete = extraire(index, "header", r' class="entete"')
+    # Tout ce qui précède le contenu : bandeau, en-tête, voile et tiroir de
+    # navigation. On prend le bloc entier plutôt que la seule balise <header>,
+    # sinon le tiroir — qui vit à côté d'elle — serait laissé de côté.
+    debut = index.index('<div class="bandeau-maquette">')
+    entete = index[debut:index.index('<main id="contenu">')].strip()
     pied = extraire(index, "footer", r' class="pied"')
-    bandeau = re.search(r'<div class="bandeau-maquette">.*?</div>', index, re.S).group(0)
+    bandeau = ""
 
     sections, titres = [], {}
     for page in PAGES:
@@ -108,8 +112,7 @@ def construire():
 .page[hidden] { display: none !important; }
 </style>
 <a class="saut-navigation" href="#contenu">Aller au contenu</a>
-%s
-%s
+%s%s
 <div id="contenu">
 %s
 </div>

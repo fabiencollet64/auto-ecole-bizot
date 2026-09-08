@@ -64,15 +64,29 @@ VERSION = "0"  # empreinte des ressources, injectée par generer.py
 # automatiquement le logotype reconstitué en HTML, sur toutes les pages.
 LOGO_FICHIER = "assets/img/logo-bizot.svg"
 
-NAV = [
-    ("index.html",             "Accueil"),
+# Navigation — deux niveaux assumés. Les trois formations sont regroupées :
+# à plat, le menu mélangeait des choses qui ne sont pas de même nature (une
+# formation, une grille de prix, une page de référencement local, un blog).
+FORMATIONS = [
     ("permis-voiture.html",    "Permis voiture"),
     ("permis-moto.html",       "Permis moto"),
-    ("code-de-la-route.html",  "Code"),
+    ("code-de-la-route.html",  "Code de la route"),
+]
+
+GROUPE_FORMATIONS = "__formations__"
+NAV = [
+    (GROUPE_FORMATIONS,        "Formations"),
     ("tarifs.html",            "Tarifs"),
     ("financement.html",       "Financement"),
-    ("auto-ecole-paris-12.html", "Paris 12"),
     ("blog.html",              "Conseils"),
+    ("a-propos.html",          "L'auto-école"),
+]
+
+# Pages atteignables depuis le tiroir et le pied de page, mais pas depuis la
+# barre : la page locale sert le référencement, le contact a déjà son bouton.
+SECONDAIRE = [
+    ("auto-ecole-paris-12.html", "Auto-école Paris 12"),
+    ("contact.html",             "Contact et accès"),
 ]
 
 _empreintes = {}
@@ -141,6 +155,17 @@ ICONES = {
     "personne": '<path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.4 0-8 2.5-8 5.5V22h16v-2.5c0-3-3.6-5.5-8-5.5z"/>',
     "eclair":   '<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>',
 }
+
+
+CHEVRON = ('<svg class="nav__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+           '<path d="M12 15.4 5.6 9l1.4-1.4 5 5 5-5L18.4 9z"/></svg>')
+
+ICONE_MENU = ('<svg class="bouton-menu__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+              '<path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>')
+
+ICONE_CROIX = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+               '<path d="m12 10.6 5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3'
+               '-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4z"/></svg>')
 
 
 def icone(nom, classe=""):
@@ -248,15 +273,35 @@ def bandeau_maquette():
 
 def entete(page, prof):
     p = prefixe(prof)
-    liens = []
-    # « Accueil » n'est pas repris dans le menu : le logo joue ce rôle, et les
-    # huit entrées ne tenaient pas sur une ligne avec le téléphone.
-    for url, libelle in NAV[1:]:
+    formation_courante = any(url == page for url, _ in FORMATIONS)
+
+    def lien(url, libelle, classe="nav__lien"):
         courant = ' aria-current="page"' if url == page else ""
-        liens.append('<li><a class="nav__lien" href="%s%s"%s>%s</a></li>'
-                     % (p, url, courant, libelle))
-    liens.append('<li class="nav__inscription"><a class="bouton bouton--principal" '
-                 'href="%scontact.html">S\'inscrire</a></li>' % p)
+        return '<a class="%s" href="%s%s"%s>%s</a>' % (classe, p, url, courant, libelle)
+
+    sous_menu = "".join('<li>%s</li>' % lien(url, libelle, "nav__sous-lien")
+                        for url, libelle in FORMATIONS)
+
+    entrees = []
+    for url, libelle in NAV:
+        if url == GROUPE_FORMATIONS:
+            entrees.append(
+                '<li class="nav__groupe" data-groupe>'
+                '<button class="nav__lien nav__declencheur" type="button" data-groupe-bouton'
+                ' aria-expanded="false" aria-controls="menu-formations"%s>%s%s</button>'
+                '<ul class="nav__sous" id="menu-formations">%s</ul>'
+                '</li>'
+                % (' data-courant="true"' if formation_courante else "", libelle,
+                   CHEVRON, sous_menu))
+        else:
+            entrees.append('<li>%s</li>' % lien(url, libelle))
+
+    tiroir_formations = "".join(
+        '<li>%s</li>' % lien(url, libelle, "tiroir__lien") for url, libelle in FORMATIONS)
+    tiroir_infos = "".join(
+        '<li>%s</li>' % lien(url, libelle, "tiroir__lien")
+        for url, libelle in [(u, l) for u, l in NAV if u != GROUPE_FORMATIONS] + SECONDAIRE)
+
     return """%s
 <header class="entete">
   <div class="conteneur entete__barre">
@@ -264,19 +309,41 @@ def entete(page, prof):
       %s
       <span class="visuellement-cache">Auto Moto École Bizot — accueil</span>
     </a>
-    <button class="bouton-menu" type="button" data-menu-bouton aria-expanded="false" aria-controls="menu">
-      Menu
-    </button>
-    <nav class="nav" id="menu" data-menu aria-label="Navigation principale">
+    <nav class="nav" aria-label="Navigation principale">
       <ul class="nav__liste">%s</ul>
     </nav>
     <div class="entete__actions">
       <a class="tel-entete" href="tel:%s">%s<span class="tel-entete__texte">%s</span></a>
+      <a class="bouton bouton--principal entete__cta" href="%scontact.html">S'inscrire</a>
+      <button class="bouton-menu" type="button" data-tiroir-ouvrir
+              aria-expanded="false" aria-controls="tiroir">%sMenu</button>
     </div>
   </div>
-</header>""" % (bandeau_maquette(), p,
-                ' aria-current="page"' if page == "index.html" else "",
-                logotype(prof), "".join(liens), TEL_LIEN, icone("tel"), TEL_AFFICHE)
+</header>
+
+<div class="voile" data-voile></div>
+<div class="tiroir" id="tiroir" data-tiroir role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="tiroir__entete">
+    <span class="tiroir__titre">Menu</span>
+    <button class="tiroir__fermer" type="button" data-tiroir-fermer aria-label="Fermer le menu">%s</button>
+  </div>
+  <nav class="tiroir__corps" aria-label="Navigation du menu">
+    <p class="tiroir__section" id="tiroir-formations">Formations</p>
+    <ul class="tiroir__liste" aria-labelledby="tiroir-formations">%s</ul>
+    <p class="tiroir__section" id="tiroir-infos">Infos pratiques</p>
+    <ul class="tiroir__liste" aria-labelledby="tiroir-infos">%s</ul>
+  </nav>
+  <div class="tiroir__pied">
+    <a class="tiroir__tel" href="tel:%s">%s%s</a>
+    <p class="tiroir__horaire">Ouvert du lundi au samedi — 113 av. du Général Michel Bizot</p>
+    <a class="bouton bouton--principal bouton--large" href="%scontact.html">S'inscrire</a>
+  </div>
+</div>""" % (bandeau_maquette(), p,
+             ' aria-current="page"' if page == "index.html" else "",
+             logotype(prof), "".join(entrees),
+             TEL_LIEN, icone("tel"), TEL_AFFICHE, p, ICONE_MENU, ICONE_CROIX,
+             tiroir_formations, tiroir_infos,
+             TEL_LIEN, icone("tel"), TEL_AFFICHE, p)
 
 
 def fil_ariane(fil, prof):
@@ -296,8 +363,12 @@ def fil_ariane(fil, prof):
 def pied(prof):
     p = prefixe(prof)
     horaires = "".join('<div><dt>%s</dt><dd>%s</dd></div>' % (j, h) for j, h in HORAIRES)
-    liens = "".join('<li><a href="%s%s">%s</a></li>' % (p, url, libelle)
-                    for url, libelle in NAV[1:])
+    def colonne(entrees):
+        return "".join('<li><a href="%s%s">%s</a></li>' % (p, url, libelle)
+                       for url, libelle in entrees)
+
+    liens_formations = colonne(FORMATIONS)
+    liens_infos = colonne([(u, l) for u, l in NAV if u != GROUPE_FORMATIONS] + SECONDAIRE)
     return """
 <footer class="pied">
   <div class="conteneur">
@@ -315,6 +386,10 @@ def pied(prof):
       </div>
       <div>
         <h2>Formations</h2>
+        <ul>%s</ul>
+      </div>
+      <div>
+        <h2>Infos pratiques</h2>
         <ul>%s</ul>
       </div>
       <div>
@@ -336,7 +411,8 @@ def pied(prof):
     </div>
   </div>
 </footer>""" % (NOM, RUE, CODE_POSTAL, VILLE, TEL_LIEN, TEL_AFFICHE, COURRIEL, COURRIEL,
-                liens, horaires, p, NOM, RUE, CODE_POSTAL, VILLE, AGENCE_SITE, AGENCE)
+                liens_formations, liens_infos, horaires, p, NOM, RUE, CODE_POSTAL,
+                VILLE, AGENCE_SITE, AGENCE)
 
 
 def appel_action(prof, titre="Envie de commencer&nbsp;?",
