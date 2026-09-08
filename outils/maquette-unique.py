@@ -56,13 +56,17 @@ def reecrire_liens(html, page):
 def construire():
     index = lire("index.html")
     css = lire("assets/css/bizot.css")
-    js = lire("assets/js/site.js")
+    js = lire("assets/js/site.js") + "\n" + lire("assets/js/chat.js")
 
     # Tout ce qui précède le contenu : bandeau, en-tête, voile et tiroir de
     # navigation. On prend le bloc entier plutôt que la seule balise <header>,
     # sinon le tiroir — qui vit à côté d'elle — serait laissé de côté.
     debut = index.index('<div class="bandeau-maquette">')
     entete = index[debut:index.index('<main id="contenu">')].strip()
+    # L'assistant est posé sur chaque page : dans le fichier unique, il ne doit
+    # figurer qu'une fois, à côté du pied de page.
+    assistant = index[index.index("<!-- assistant:début -->"):
+                      index.index("<!-- assistant:fin -->") + len("<!-- assistant:fin -->")]
     pied = extraire(index, "footer", r' class="pied"')
     bandeau = ""
 
@@ -117,11 +121,12 @@ def construire():
 %s
 </div>
 %s
+%s
 <script>
 %s
 %s
 </script>
-""" % (css, bandeau, entete, "\n".join(sections), pied, js, routeur)
+""" % (css, bandeau, entete, "\n".join(sections), pied, assistant, js, routeur)
 
 
 def _json(dictionnaire):

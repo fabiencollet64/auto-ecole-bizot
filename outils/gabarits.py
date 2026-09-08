@@ -132,6 +132,41 @@ def logotype(prof=0):
     )
 
 
+def assistant(prof=0):
+    """Assistant de discussion — bulle flottante et panneau.
+
+    Les bornes en commentaire servent au fichier unique de démonstration, qui
+    doit reprendre ce bloc une seule fois et non douze.
+    """
+    return """
+<!-- assistant:début -->
+<div class="chat" data-chat data-prefixe="%s">
+  <button class="chat__lanceur" type="button" data-chat-ouvrir
+          aria-expanded="false" aria-controls="chat-panneau">
+    %s<span class="chat__lanceur-texte">Une question&nbsp;?</span>
+  </button>
+  <section class="chat__panneau" id="chat-panneau" data-chat-panneau
+           role="dialog" aria-labelledby="chat-titre">
+    <header class="chat__entete">
+      <div>
+        <p class="chat__titre" id="chat-titre">Assistant %s</p>
+        <p class="chat__note">Réponses préparées par l'auto-école — pas d'intelligence artificielle</p>
+      </div>
+      <button class="chat__fermer" type="button" data-chat-fermer aria-label="Fermer la discussion">%s</button>
+    </header>
+    <div class="chat__fil" data-chat-fil role="log" aria-live="polite" aria-label="Conversation"></div>
+    <div class="chat__suggestions" data-chat-suggestions></div>
+    <form class="chat__saisie" data-chat-form>
+      <label class="visuellement-cache" for="chat-champ">Votre question</label>
+      <input id="chat-champ" data-chat-champ type="text" autocomplete="off"
+             placeholder="Écrivez votre question…">
+      <button class="chat__envoyer" type="submit" aria-label="Envoyer la question">%s</button>
+    </form>
+  </section>
+</div>
+<!-- assistant:fin -->""" % (prefixe(prof), ICONE_BULLE, NOM, ICONE_CROIX, ICONE_ENVOI)
+
+
 def prefixe(profondeur):
     """'' à la racine, '../' dans blog/."""
     return "../" * profondeur
@@ -163,6 +198,14 @@ CHEVRON = ('<svg class="nav__chevron" viewBox="0 0 24 24" aria-hidden="true" foc
 
 ICONE_MENU = ('<svg class="bouton-menu__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
               '<path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>')
+
+ICONE_BULLE = ('<svg class="chat__icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+               '<path d="M12 3c-5 0-9 3.4-9 7.5 0 2.3 1.3 4.4 3.3 5.8V21l3.4-2a11 11 0 0 0 2.3.2c5 0 '
+               '9-3.4 9-7.7S17 3 12 3zm-3.5 8.7a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zm3.5 0a1.3 '
+               '1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zm3.5 0a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6z"/></svg>')
+
+ICONE_ENVOI = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+               '<path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>')
 
 ICONE_CROIX = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
                '<path d="m12 10.6 5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3'
@@ -479,10 +522,14 @@ def page(fichier, titre, description, corps, prof=0, fil=None, schemas=(), page_
 %s
 </main>
 %s
+%s
 <script src="%sassets/js/site.js?v=%s" defer></script>
+<script src="%sassets/js/chat.js?v=%s" defer></script>
 </body>
 </html>
 """ % (titre, description, canonique, NOM, titre, description, canonique,
        p, empreinte("assets/css/bizot.css"), jsonld(*blocs),
        entete(page_nav or fichier, prof), fil_ariane(fil, prof), corps,
-       pied(prof), p, empreinte("assets/js/site.js"))
+       pied(prof), assistant(prof),
+       p, empreinte("assets/js/site.js"),
+       p, empreinte("assets/js/chat.js"))

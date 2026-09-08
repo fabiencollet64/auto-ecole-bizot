@@ -638,3 +638,121 @@ table.tarifs td:last-child, table.tarifs th:last-child { text-align: right; font
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
 }
+
+/* --------------------------------------------------------------------------
+   16. Assistant de discussion
+   Bulle flottante en bas à droite, panneau au-dessus. Le panneau passe sous
+   le voile du tiroir de navigation (z-index 55 contre 60) : les deux ne se
+   disputent jamais l'écran.
+   -------------------------------------------------------------------------- */
+.chat { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 55; }
+
+.chat__lanceur {
+  display: inline-flex; align-items: center; gap: .55rem;
+  height: 3.25rem; padding: 0 1.25rem;
+  background: var(--bleu); color: var(--blanc);
+  border: 0; border-radius: 999px;
+  font: inherit; font-size: var(--petit); font-weight: 800;
+  box-shadow: var(--ombre-forte); cursor: pointer;
+}
+.chat__lanceur:hover { background: var(--bleu-fonce); }
+.chat__icone { width: 1.4rem; height: 1.4rem; fill: currentColor; }
+
+.chat__panneau {
+  position: absolute; right: 0; bottom: 4rem;
+  display: flex; flex-direction: column;
+  width: min(23rem, calc(100vw - 2.5rem));
+  max-height: min(34rem, calc(100vh - 9rem));
+  background: var(--blanc); color: var(--texte);
+  border-radius: var(--rayon-large); overflow: hidden;
+  box-shadow: var(--ombre-forte);
+  opacity: 0; visibility: hidden; transform: translateY(.75rem);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.chat[data-ouvert="true"] .chat__panneau { opacity: 1; visibility: visible; transform: none; }
+
+.chat__entete {
+  display: flex; align-items: flex-start; gap: .75rem;
+  padding: .9rem 1rem; background: var(--bleu-nuit); color: var(--blanc);
+}
+.chat__titre { margin: 0; font-size: var(--petit); font-weight: 800; }
+.chat__note { margin: .15rem 0 0; font-size: .75rem; color: rgba(255,255,255,.72); max-width: none; }
+.chat__fermer {
+  margin-left: auto; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0; cursor: pointer;
+  background: var(--bleu-profond); color: var(--blanc);
+  border: 1px solid rgba(255,255,255,.22); border-radius: .5rem;
+}
+.chat__fermer svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
+
+.chat__fil {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  display: flex; flex-direction: column; gap: .6rem;
+  background: var(--gris);
+}
+.chat__bulle {
+  max-width: 88%; padding: .7rem .9rem; border-radius: var(--rayon);
+  font-size: 1rem; line-height: 1.5;
+}
+.chat__bulle p { margin: 0; max-width: none; font-size: inherit; }
+.chat__bulle p + p { margin-top: .55rem; }
+.chat__bulle--assistant { background: var(--blanc); border: 1px solid var(--trait); align-self: flex-start; }
+.chat__bulle--visiteur { background: var(--bleu); color: var(--blanc); align-self: flex-end; font-weight: 600; }
+.chat__bulle--assistant a { color: var(--marque); font-weight: 700; }
+.chat__mention { font-size: .8125rem; color: var(--texte-doux); }
+
+.chat__points { display: inline-flex; gap: .25rem; padding: .1rem 0; }
+.chat__points i { width: .4rem; height: .4rem; border-radius: 50%; background: var(--encre-douce); animation: chat-point 1s infinite; }
+.chat__points i:nth-child(2) { animation-delay: .15s; }
+.chat__points i:nth-child(3) { animation-delay: .3s; }
+@keyframes chat-point { 0%, 60%, 100% { opacity: .3; } 30% { opacity: 1; } }
+
+.chat__suggestions {
+  display: flex; flex-wrap: wrap; gap: .4rem;
+  padding: .75rem 1rem; border-top: 1px solid var(--trait); background: var(--blanc);
+}
+.chat__suggestions:empty { display: none; }
+.chat__suggestion {
+  min-height: 40px; padding: .4rem .8rem;
+  background: var(--bleu-voile); color: var(--marque);
+  border: 1px solid transparent; border-radius: 999px;
+  font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer;
+}
+.chat__suggestion:hover { background: var(--blanc); border-color: var(--marque); }
+
+.chat__saisie { display: flex; gap: .5rem; padding: .75rem 1rem 1rem; border-top: 1px solid var(--trait); background: var(--blanc); }
+.chat__saisie input {
+  flex: 1; min-width: 0; min-height: 44px;
+  padding: .5rem .75rem; font: inherit; font-size: 1rem;
+  border: 2px solid var(--trait); border-radius: var(--rayon);
+  background: var(--blanc); color: var(--texte);
+}
+.chat__saisie input:focus { border-color: var(--bleu); }
+.chat__envoyer {
+  flex: 0 0 auto; width: 44px; height: 44px; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bleu); color: var(--blanc); border: 0; border-radius: var(--rayon);
+}
+.chat__envoyer:hover { background: var(--bleu-fonce); }
+.chat__envoyer svg { width: 1.2rem; height: 1.2rem; fill: currentColor; }
+
+.chat__rappel { display: grid; gap: .35rem; margin-top: .6rem; }
+.chat__rappel label { font-size: .8125rem; font-weight: 700; }
+.chat__rappel input {
+  min-height: 44px; padding: .45rem .7rem; font: inherit; font-size: 1rem;
+  border: 2px solid var(--trait); border-radius: .5rem; background: var(--blanc); color: var(--texte);
+}
+.chat__rappel input:focus { border-color: var(--bleu); }
+.chat__rappel .bouton { min-height: 44px; margin-top: .35rem; font-size: .9375rem; }
+
+/* Le tiroir de navigation prend toute la place : l'assistant s'efface. */
+body.tiroir-ouvert .chat { display: none; }
+
+@media (max-width: 30rem) {
+  .chat { right: .75rem; bottom: .75rem; left: .75rem; }
+  .chat__lanceur { height: 3rem; padding: 0 1rem; font-size: .9375rem; }
+  .chat__panneau { width: auto; left: 0; right: 0; bottom: 3.75rem; max-height: calc(100vh - 8rem); }
+}
+
+@media print { .chat { display: none; } }

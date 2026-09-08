@@ -108,6 +108,36 @@ réglé par `LOGO_FICHIER` dans `outils/gabarits.py`).
 Corps de texte à 18 px minimum, zones cliquables de 48 px, navigation
 utilisable au clavier, lien d'évitement sur chaque page.
 
+## L'assistant de discussion
+
+La bulle en bas à droite ouvre un assistant **sans intelligence artificielle** :
+toutes les réponses sont écrites à l'avance, dans `assets/js/chat.js`. C'est un
+choix, pas une limite technique. Un assistant branché sur un modèle de langage
+inventerait des tarifs, des délais ou des conditions d'aide au fil de la
+conversation — sur un site d'auto-école, une réponse fausse sur le prix d'un
+forfait ou sur l'éligibilité à l'aide régionale devient un litige, et c'est
+l'auto-école qui en répond.
+
+L'assistant sait faire trois choses :
+
+- **proposer les sujets courants** — tarifs, formations voiture et moto, code,
+  aides, délais, nombre d'heures, inscription, horaires et accès ;
+- **comprendre une question écrite librement**, en cherchant le sujet dont les
+  mots-clés correspondent le mieux — accents et majuscules indifférents ;
+- **admettre qu'il ne sait pas**, et proposer alors d'appeler ou d'être
+  rappelé, plutôt que de broder.
+
+Le parcours se termine sur un formulaire de rappel — prénom et téléphone — qui
+transforme une visite en prise de contact. C'est là son intérêt commercial :
+il travaille en dehors des heures d'ouverture.
+
+**Pour modifier les réponses** : tout tient dans le tableau `SUJETS` en tête de
+`assets/js/chat.js`. Chaque sujet porte un titre (le libellé du bouton), une
+liste de mots-clés, la réponse en HTML et les sujets proposés ensuite. Le
+marqueur `{p}` dans une réponse est remplacé par le chemin vers la racine du
+site : il permet d'écrire `{p}tarifs.html` et que le lien fonctionne aussi
+depuis un article du blog.
+
 ## Contenu à valider avant mise en ligne
 
 Le contenu rédactionnel est un contenu d'amorçage, rédigé à partir des
