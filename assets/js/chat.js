@@ -191,7 +191,17 @@
      suggestions, qui changent la hauteur du panneau et laissaient sinon la
      dernière réponse coupée. */
   function defiler() {
-    window.requestAnimationFrame(function () { fil.scrollTop = fil.scrollHeight; });
+    window.requestAnimationFrame(function () {
+      var derniere = fil.lastElementChild;
+      /* Une réponse plus haute que le cadre se lit par le début : aller au bas
+         du fil afficherait sa fin, et le visiteur croirait avoir manqué
+         quelque chose. */
+      if (derniere && derniere.offsetHeight > fil.clientHeight) {
+        fil.scrollTop = Math.max(0, derniere.offsetTop - fil.offsetTop - 8);
+      } else {
+        fil.scrollTop = fil.scrollHeight;
+      }
+    });
   }
 
   function bulle(role, html) {

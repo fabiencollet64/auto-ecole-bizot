@@ -150,7 +150,7 @@ def assistant(prof=0):
     <header class="chat__entete">
       <div>
         <p class="chat__titre" id="chat-titre">Assistant %s</p>
-        <p class="chat__note">Réponses préparées par l'auto-école — pas d'intelligence artificielle</p>
+        <p class="chat__note">Réponses préparées par l'auto-école, sans IA</p>
       </div>
       <button class="chat__fermer" type="button" data-chat-fermer aria-label="Fermer la discussion">%s</button>
     </header>
