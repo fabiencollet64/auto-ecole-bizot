@@ -335,7 +335,7 @@ def entete(page, prof):
   </nav>
   <div class="tiroir__pied">
     <a class="tiroir__tel" href="tel:%s">%s%s</a>
-    <p class="tiroir__horaire">Ouvert du lundi au samedi — 113 av. du Général Michel Bizot</p>
+    <p class="tiroir__horaire">Ouvert du lundi au samedi</p>
     <a class="bouton bouton--principal bouton--large" href="%scontact.html">S'inscrire</a>
   </div>
 </div>""" % (bandeau_maquette(), p,
